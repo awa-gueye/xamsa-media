@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ auteur.get_full_name|default:auteur.username }} &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap compte-hero">
+  <div class="ch-av">
+    {% if profil.photo %}<img src="{{ profil.photo.url }}" alt="Photo de {{ auteur.get_full_name|default:auteur.username }}">
+    {% else %}<span>{{ auteur.first_name.0|default:auteur.username.0|upper }}</span>{% endif %}
+  </div>
+  <div>
+    <span class="eyebrow">Profil</span>
+    <h1>{{ auteur.get_full_name|default:auteur.username }}</h1>
+    <p class="dek">{% if profil %}{{ profil.get_type_profil_display }}{% else %}Contributeur{% endif %}
+      {% if profil.localisation %} &middot; {{ profil.localisation }}{% endif %}
+      {% if profil.organisation %} &middot; {{ profil.organisation }}{% endif %}</p>
+  </div>
+</div></section>
+
+<section class="block" style="padding-top:0"><div class="wrap" style="max-width:900px">
+  {% if profil.bio %}
+  <div class="compte-card" style="margin-bottom:1.4rem"><h3>À propos</h3><p class="lead" style="margin-top:.5rem">{{ profil.bio }}</p></div>
+  {% endif %}
+
+  <div class="sec-head"><div><span class="eyebrow">Publications</span><h2>Contributions publiées</h2></div></div>
+  {% if publications %}
+  <div class="cardgrid">
+    {% for c in publications %}
+    <a class="acard reveal" href="{% url 'publication_detail' c.pk %}">
+      <div class="thumb">{% if c.image %}<img src="{{ c.image.url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<span class="badge pine">{{ c.get_type_display }}</span></div>
+      <div class="body"><h3>{{ c.titre }}</h3>{% if c.resume %}<p>{{ c.resume|truncatewords:16 }}</p>{% endif %}
+        <span class="meta">{{ c.date|date:"d F Y" }}</span></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="lead">Ce contributeur n'a pas encore de publication.</p>
+  {% endif %}
+</div></section>
+{% endblock %}

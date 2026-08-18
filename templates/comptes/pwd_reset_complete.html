@@ -1,0 +1,9 @@
+{% extends 'base_auth.html' %}
+{% block title %}Mot de passe modifié &middot; Xamsa Média{% endblock %}
+{% block pitch_titre %}C'est fait{% endblock %}
+{% block content %}
+<span class="eyebrow">Réinitialisation</span>
+<h2>Mot de passe modifié</h2>
+<p class="sub">Votre mot de passe a été mis à jour. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.</p>
+<a href="{% url 'connexion' %}" class="btn btn-green btn-block">Se connecter <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+{% endblock %}

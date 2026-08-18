@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ categorie.nom }} &middot; Xamsa Média{% endblock %}
+{% block nav_act %}active{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap reveal">
+  <span class="eyebrow">Rubrique</span>
+  <h1>{{ categorie.nom }}</h1>
+  <p class="dek">{{ desc }}</p>
+</div></section>
+
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="cardgrid">
+      {% for a in articles %}
+      <a class="acard reveal" href="{{ a.get_absolute_url }}">
+        <div class="thumb">{% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<span class="badge pine">{{ a.get_type_display }}</span></div>
+        <div class="body"><h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:20 }}</p>{% endif %}
+          <span class="meta">Lecture {{ a.temps_lecture }} min <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
+      {% empty %}{% include 'partials/bientot.html' with message="Les publications de cette rubrique arriveront prochainement." %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

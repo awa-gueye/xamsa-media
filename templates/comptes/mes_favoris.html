@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Mes favoris &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap">
+  <span class="eyebrow">Mon compte</span>
+  <h1>À lire plus tard</h1>
+  <p class="dek">Les publications que vous avez mises de côté.</p>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap">
+  {% if publications %}
+  <div class="cardgrid">
+    {% for c in publications %}
+    <a class="acard reveal" href="{% url 'publication_detail' c.pk %}">
+      <div class="thumb">{% if c.image %}<img src="{{ c.image.url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<span class="badge pine">{{ c.get_type_display }}</span></div>
+      <div class="body"><h3>{{ c.titre }}</h3>{% if c.resume %}<p>{{ c.resume|truncatewords:16 }}</p>{% endif %}
+        <span class="meta">{{ c.auteur.get_full_name|default:c.auteur.username }} &middot; {{ c.date|date:"d F Y" }}</span></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="lead">Vous n'avez rien enregistré pour l'instant. Sur une publication, cliquez sur « Lire plus tard » pour la retrouver ici.</p>
+  {% endif %}
+  <p style="margin-top:1.6rem"><a href="{% url 'compte' %}">&larr; Retour à mon compte</a></p>
+</div></section>
+{% endblock %}

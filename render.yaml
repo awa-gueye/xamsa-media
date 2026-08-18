@@ -1,0 +1,51 @@
+# Blueprint Render : deploiement automatique de Xamsa Media (gratuit).
+# Depuis le dashboard Render : "New +" -> "Blueprint" -> selectionner ce depot.
+databases:
+  - name: xamsa-db
+    plan: free
+    databaseName: xamsa
+    user: xamsa
+
+services:
+  - type: web
+    name: xamsa-media
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: "bash build.sh"
+    startCommand: "env RUN_SCHEDULER=1 gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 60"
+    envVars:
+      # --- Django ---
+      - key: PYTHON_VERSION
+        value: "3.12.4"
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true          # Render genere une cle secrete forte
+      - key: DATABASE_URL
+        fromDatabase:
+          name: xamsa-db
+          property: connectionString  # branche automatiquement le PostgreSQL
+      # --- Stockage permanent des fichiers envoyes (Cloudinary, gratuit) ---
+      - key: CLOUDINARY_URL
+        sync: false                   # cloudinary://cle:secret@cloud (dashboard)
+      # --- Assistant IA (Looy laaj) ---
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false                   # a renseigner dans le dashboard Render
+      - key: GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      # --- Email (reinitialisation du mot de passe) ---
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_USE_TLS
+        value: "1"
+      - key: EMAIL_HOST_USER
+        value: xamsamedia@gmail.com
+      - key: EMAIL_HOST_PASSWORD
+        sync: false                   # mot de passe d'application Google (dashboard)
+      - key: DEFAULT_FROM_EMAIL
+        value: "Xamsa Média <xamsamedia@gmail.com>"

@@ -1,0 +1,17 @@
+{% extends 'base_auth.html' %}
+{% block title %}Mot de passe oublié &middot; Xamsa Média{% endblock %}
+{% block pitch_titre %}Réinitialisez votre accès{% endblock %}
+{% block content %}
+<span class="eyebrow">Mot de passe oublié</span>
+<h2>Réinitialiser mon mot de passe</h2>
+<p class="sub">Saisissez l'adresse email de votre compte. Nous vous enverrons un lien pour définir un nouveau mot de passe.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="field"><label>Adresse email</label>
+    <input type="email" name="email" placeholder="awa.gueye@email.com" required>
+    {% if form.email.errors %}<div class="errmsg">{{ form.email.errors.0 }}</div>{% endif %}
+  </div>
+  <button type="submit" class="btn btn-green btn-block">Envoyer le lien <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+</form>
+<p class="auth-alt"><a href="{% url 'connexion' %}">&larr; Retour à la connexion</a></p>
+{% endblock %}

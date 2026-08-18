@@ -1,0 +1,21 @@
+# Ne pas embarquer dans l'image de production
+.git
+.gitignore
+.venv
+venv
+env
+__pycache__
+*.pyc
+*.pyo
+
+# Donnees et secrets locaux (ne JAMAIS mettre dans l'image)
+.env
+db.sqlite3
+media/
+staticfiles/
+
+# Divers
+.claude
+*.md
+.vscode
+.idea

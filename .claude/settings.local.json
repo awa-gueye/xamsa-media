@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import ddgs\")",
+      "Bash(python -c \"import duckduckgo_search\")",
+      "Bash(pip install *)",
+      "Bash(python -c \"from ddgs import DDGS; r=DDGS\\(\\).text\\('presse senegal', region='fr-fr', max_results=2\\); import json; print\\(json.dumps\\(r, ensure_ascii=False, indent=1\\)[:800]\\)\")",
+      "Bash(python manage.py check)",
+      "Bash(python -c ' *)",
+      "Bash(GEMINI_API_KEY=cle-bidon-invalide WEB_SEARCH_ENABLED=0 python -c ' *)",
+      "Bash(GEMINI_API_KEY=cle-test WEB_SEARCH_ENABLED=0 python -c ' *)",
+      "Bash(python manage.py check_assistant --question \"Bonjour\")",
+      "Bash(python -c \"import ast,glob; [ast.parse\\(open\\(f,encoding='utf-8'\\).read\\(\\)\\) for f in glob.glob\\('assistant/**/*.py',recursive=True\\)]; print\\('assistant: syntaxe OK'\\)\")",
+      "Bash(LLM_PROVIDER=gemini GEMINI_API_KEY=AIzaSyCTDnOktrv2gCjHwPgOKxmQfSGUmCBKJ-s python -c ' *)",
+      "Bash(WEB_SEARCH_ENABLED=0 python -c ' *)",
+      "Bash(python manage.py check_assistant --question \"Quel est le role d un journaliste\")",
+      "Bash(python -)",
+      "Bash(python manage.py nettoyer_demo)",
+      "Bash(python manage.py seed)",
+      "Bash(python manage.py makemigrations --check --dry-run)",
+      "Bash(python manage.py migrate)",
+      "Bash(python manage.py makemigrations espaces)",
+      "Bash(2>&1)",
+      "Bash(mkdir -p espaces/management/commands)",
+      "Bash(touch espaces/management/__init__.py espaces/management/commands/__init__.py)",
+      "Bash(python manage.py importer_logos)",
+      "Bash(cd \"C:\\\\Users\\\\hp\\\\Documents\\\\Xamsamedia\\\\xamsa_media\" && mkdir -p static/img/medias-src && cp \"C:/Users/hp/Documents/Xamsamedia/img/\"* static/img/medias-src/ && ls static/img/medias-src/ | wc -l && echo \"fichiers copies\")",
+      "Bash(python manage.py makemigrations comptes)",
+      "Bash(python manage.py makemigrations veille)",
+      "Bash(python manage.py generer_brief --force)",
+      "Bash(EMAIL_HOST=smtp.gmail.com EMAIL_HOST_USER=test@gmail.com EMAIL_HOST_PASSWORD=xxxx python -c ' *)",
+      "Bash(DJANGO_DEBUG=0 DJANGO_ALLOWED_HOSTS=\"xamsa.fly.dev\" python manage.py check --deploy)",
+      "Bash(DJANGO_DEBUG=0 python manage.py collectstatic --noinput)",
+      "Bash(DATABASE_URL=postgres://u:p@host:5432/xamsa DJANGO_DEBUG=0 DJANGO_SECRET_KEY=test-key python -c ' *)",
+      "Bash(DJANGO_DEBUG=0 DJANGO_SECRET_KEY=\"une-cle-de-test-suffisamment-longue-pour-la-prod-123456\" DATABASE_URL=\"postgres://u:p@host:5432/xamsa\" DJANGO_ALLOWED_HOSTS=\"xamsa-media.onrender.com\" python manage.py check --deploy)",
+      "Bash(DJANGO_DEBUG=0 DJANGO_SECRET_KEY=cle-test-longue-pour-prod-1234567890 DATABASE_URL=postgres://u:p@h:5432/x DJANGO_ALLOWED_HOSTS=x.onrender.com python -c ' *)"
+    ]
+  }
+}

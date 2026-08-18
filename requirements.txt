@@ -1,0 +1,13 @@
+Django>=5.0,<6.0
+feedparser>=6.0
+requests>=2.31
+Pillow>=10.0
+python-dotenv>=1.0
+ddgs>=9.0              # recherche web (DuckDuckGo) pour l'assistant, sans cle API
+gunicorn>=21.2         # serveur WSGI de production
+whitenoise>=6.6        # service des fichiers statiques en production
+dj-database-url>=2.1   # lecture de DATABASE_URL (PostgreSQL) en production
+psycopg2-binary>=2.9   # pilote PostgreSQL (Render, Neon, etc.)
+cloudinary>=1.40       # stockage permanent des fichiers envoyes (offre gratuite)
+django-cloudinary-storage>=0.3
+# anthropic>=0.40        # optionnel : LLM_PROVIDER=anthropic (par defaut : Gemini via REST)

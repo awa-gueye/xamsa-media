@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Modération &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap">
+  <span class="eyebrow">Administration</span>
+  <h1>Modération des contributions</h1>
+  <p class="dek">{{ contributions|length }} contribution{{ contributions|length|pluralize }} en attente. L'IA a pré-analysé chacune : traitez en priorité ce qui est signalé « À vérifier ».</p>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap" style="max-width:900px">
+  {% if contributions %}
+  <ul class="mod-list">
+    {% for c in contributions %}
+    <li class="mod-item">
+      <div class="mod-head">
+        <span class="mod-type">{{ c.get_type_display }}</span>
+        {% if c.moderation_verdict %}<span class="mod-verdict v-{{ c.moderation_verdict }}">
+          {{ c.get_moderation_verdict_display }} &middot; {{ c.moderation_score }}/100</span>{% else %}
+          <span class="mod-verdict v-none">Non évalué par l'IA</span>{% endif %}
+        <span class="mod-date">{{ c.date|date:"d/m/Y H:i" }}</span>
+      </div>
+      <h3 class="mod-titre"><a href="{% url 'publication_detail' c.pk %}" target="_blank" rel="noopener">{{ c.titre }}</a></h3>
+      <p class="mod-auteur">Par {{ c.auteur.get_full_name|default:c.auteur.username }}{% if c.auteur.profil.de_confiance %} <span class="mod-trust">de confiance</span>{% endif %}</p>
+      {% if c.resume %}<p class="mod-resume">{{ c.resume|truncatewords:40 }}</p>{% endif %}
+      {% if c.moderation_note %}<p class="mod-ianote"><b>Avis de l'IA :</b> {{ c.moderation_note }}</p>{% endif %}
+      <div class="mod-actions">
+        <form method="post" action="{% url 'moderer' c.pk %}">{% csrf_token %}<input type="hidden" name="action" value="approuver">
+          <button class="btn btn-green btnsm" type="submit"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg> Approuver</button></form>
+        <form method="post" action="{% url 'moderer' c.pk %}" onsubmit="return confirm('Rejeter cette contribution ?');">{% csrf_token %}<input type="hidden" name="action" value="rejeter">
+          <button class="btn btn-ghost btnsm" type="submit"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg> Rejeter</button></form>
+        <a class="mod-voir" href="{% url 'publication_detail' c.pk %}" target="_blank" rel="noopener">Aperçu <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="lead">Aucune contribution en attente. Tout est à jour.</p>
+  {% endif %}
+</div></section>
+{% endblock %}

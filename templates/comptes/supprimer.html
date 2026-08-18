@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap">
+  <span class="eyebrow">Supprimer</span>
+  <h1>Supprimer cette contribution ?</h1>
+  <p class="dek">Cette action est définitive et ne peut pas être annulée.</p>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap" style="max-width:640px">
+  <div class="compte-card">
+    <h3>{{ contrib.titre }}</h3>
+    <p class="lead" style="margin:.4rem 0 1.2rem">{{ contrib.get_type_display }}{% if contrib.categorie %} &middot; {{ contrib.categorie }}{% endif %} &middot; {{ contrib.date|date:"d/m/Y" }}</p>
+    <form method="post" action="{% url 'contribution_supprimer' contrib.pk %}" style="display:flex;gap:.7rem;flex-wrap:wrap">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Oui, supprimer définitivement</button>
+      <a class="btn btn-ghost" href="{% url 'compte' %}">Annuler</a>
+    </form>
+  </div>
+</div></section>
+{% endblock %}

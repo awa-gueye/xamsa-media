@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Notifications &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap">
+  <span class="eyebrow">Mon compte</span>
+  <h1>Notifications</h1>
+  <p class="dek">Les réactions et commentaires sur vos publications.</p>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap" style="max-width:760px">
+  {% if notifs %}
+  <ul class="notif-list">
+    {% for n in notifs %}
+    <li class="notif-item{% if not n.lu %} neuf{% endif %}">
+      <a class="notif-av" href="{% url 'profil_public' n.acteur.pk %}">{% if n.acteur.profil.photo %}<img src="{{ n.acteur.profil.photo.url }}" alt="">{% else %}{{ n.acteur.first_name.0|default:n.acteur.username.0|upper }}{% endif %}</a>
+      <a class="notif-body" href="{% url 'publication_detail' n.contribution.pk %}{% if n.type != 'jaime' %}#commentaires{% endif %}">
+        <span class="notif-txt">
+          <b>{{ n.acteur.get_full_name|default:n.acteur.username }}</b>
+          {% if n.type == 'jaime' %}a aimé votre publication{% elif n.type == 'reponse' %}a répondu à votre commentaire{% else %}a commenté votre publication{% endif %}
+          <span class="notif-pub">« {{ n.contribution.titre|truncatechars:60 }} »</span>
+        </span>
+        <span class="notif-date">{{ n.date|date:"d M Y, H:i" }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="lead">Aucune notification pour l'instant. Elles apparaîtront ici quand vos publications recevront des commentaires ou des « J'aime ».</p>
+  {% endif %}
+  <p style="margin-top:1.6rem"><a href="{% url 'compte' %}">&larr; Retour à mon compte</a></p>
+</div></section>
+{% endblock %}

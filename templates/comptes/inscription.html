@@ -1,0 +1,83 @@
+{% extends 'base_auth.html' %}
+{% block title %}Inscription &middot; Xamsa Média{% endblock %}
+{% block pitch_titre %}Rejoignez l'observatoire des médias{% endblock %}
+{% block content %}
+<span class="eyebrow">Créer un compte</span>
+<h2>Bienvenue sur Xamsa Média</h2>
+<div class="steps-ind"><span class="on" id="ind1">1 · Profil</span><span id="ind2">2 · Informations</span></div>
+
+<form method="post" action="{% url 'inscription' %}" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="errmsg errbox">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+  <!-- Etape 1 : choix du profil -->
+  <div class="step" id="step1">
+    <p class="sub">Qui êtes-vous ? Choisissez votre profil pour un formulaire adapté.</p>
+    <div class="roles" id="roles">
+      {% for val, label, desc in roles %}
+      <label class="role {% if form.type_profil.value == val or forloop.first and not form.type_profil.value %}sel{% endif %}">
+        <input type="radio" name="type_profil" value="{{ val }}" {% if form.type_profil.value == val or forloop.first and not form.type_profil.value %}checked{% endif %}>
+        <span class="ri">
+          {% if val == 'lecteur' %}<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+          {% elif val == 'journaliste' %}<svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h6"/></svg>
+          {% elif val == 'etudiant' %}<svg class="icon" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM5 11v5l7 4 7-4v-5"/></svg>
+          {% else %}<svg class="icon" viewBox="0 0 24 24"><path d="M3 21V7l7-4 7 4v14M7 21v-5h6v5M10 9h.01M14 9h.01"/></svg>{% endif %}
+        </span>
+        <span class="rt"><b>{{ label }}</b><small>{{ desc }}</small></span>
+        <span class="rc"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></span>
+      </label>
+      {% endfor %}
+    </div>
+    <button type="button" class="btn btn-green btn-block" id="toStep2">Continuer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+
+  <!-- Etape 2 : informations -->
+  <div class="step" id="step2" hidden>
+    <p class="sub">Renseignez vos informations pour finaliser votre inscription.</p>
+    <div class="grid2">
+      <div class="field"><label>Prénom</label><input type="text" name="prenom" value="{{ form.prenom.value|default:'' }}" placeholder="Awa" required>{% if form.prenom.errors %}<div class="errmsg">{{ form.prenom.errors.0 }}</div>{% endif %}</div>
+      <div class="field"><label>Nom</label><input type="text" name="nom" value="{{ form.nom.value|default:'' }}" placeholder="Gueye" required>{% if form.nom.errors %}<div class="errmsg">{{ form.nom.errors.0 }}</div>{% endif %}</div>
+    </div>
+    <div class="field"><label>Email</label><input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="awa.gueye@email.com" required>{% if form.email.errors %}<div class="errmsg">{{ form.email.errors.0 }}</div>{% endif %}</div>
+    <div class="grid2">
+      <div class="field"><label>Téléphone <span class="opt">(optionnel)</span></label><input type="text" name="telephone" value="{{ form.telephone.value|default:'' }}" placeholder="+221 77 000 00 00"></div>
+      <div class="field"><label>Localisation <span class="opt">(optionnel)</span></label><input type="text" name="localisation" value="{{ form.localisation.value|default:'' }}" placeholder="Dakar, Sénégal"></div>
+    </div>
+    <div class="field"><label>Organisation <span class="opt">(optionnel)</span></label><input type="text" name="organisation" value="{{ form.organisation.value|default:'' }}" placeholder="Rédaction, association, université..."></div>
+    <div class="field"><label>Photo de profil <span class="opt">(optionnel)</span></label><input type="file" name="photo" accept="image/*"></div>
+    <div class="grid2">
+      <div class="field"><label>Mot de passe</label><input type="password" name="mot_de_passe" placeholder="••••••••" required>{% if form.mot_de_passe.errors %}<div class="errmsg">{{ form.mot_de_passe.errors.0 }}</div>{% endif %}</div>
+      <div class="field"><label>Confirmer</label><input type="password" name="confirmation" placeholder="••••••••" required>{% if form.confirmation.errors %}<div class="errmsg">{{ form.confirmation.errors.0 }}</div>{% endif %}</div>
+    </div>
+    <div class="step-nav">
+      <button type="button" class="btn btn-ghost" id="backStep1"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Retour</button>
+      <button type="submit" class="btn btn-green">Créer mon compte <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</form>
+<p class="auth-alt">Déjà inscrit ? <a href="{% url 'connexion' %}">Se connecter</a></p>
+{% endblock %}
+{% block script %}
+<script>
+  (function(){
+    var s1=document.getElementById('step1'), s2=document.getElementById('step2');
+    var i1=document.getElementById('ind1'), i2=document.getElementById('ind2');
+    document.querySelectorAll('#roles .role').forEach(function(r){
+      r.addEventListener('click',function(){
+        document.querySelectorAll('#roles .role').forEach(function(x){x.classList.remove('sel');});
+        r.classList.add('sel'); r.querySelector('input').checked=true;
+      });
+    });
+    document.getElementById('toStep2').onclick=function(){
+      s1.hidden=true; s2.hidden=false; i1.classList.remove('on'); i2.classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    document.getElementById('backStep1').onclick=function(){
+      s2.hidden=true; s1.hidden=false; i2.classList.remove('on'); i1.classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    // si erreurs de validation sur l'etape 2, l'ouvrir directement
+    if(document.querySelector('#step2 .errmsg')){ document.getElementById('toStep2').click(); }
+  })();
+</script>
+{% endblock %}

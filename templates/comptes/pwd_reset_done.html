@@ -1,0 +1,9 @@
+{% extends 'base_auth.html' %}
+{% block title %}Lien envoyé &middot; Xamsa Média{% endblock %}
+{% block pitch_titre %}Consultez votre boîte mail{% endblock %}
+{% block content %}
+<span class="eyebrow">Mot de passe oublié</span>
+<h2>Lien envoyé</h2>
+<p class="sub">Si un compte existe avec cette adresse, un email contenant un lien de réinitialisation vient d'être envoyé. Pensez à vérifier vos courriers indésirables.</p>
+<p class="auth-alt"><a href="{% url 'connexion' %}">&larr; Retour à la connexion</a></p>
+{% endblock %}

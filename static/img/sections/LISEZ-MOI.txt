@@ -1,0 +1,13 @@
+Photos des cartes "Toutes les sections" (page d'accueil).
+
+Deposez ici 3 photos (idealement des photos que vous possedez ou libres de
+droits, par exemple des photos de terrain au Senegal) nommees exactement :
+
+    actualites.jpg
+    academie.jpg
+    communaute.jpg
+
+Format conseille : JPG, environ 800 x 500 px (paysage).
+
+Tant qu'une photo est absente, la carte affiche un degrade bleu soigne (aucun
+element casse). Des que vous ajoutez le fichier au bon nom, la photo apparait.

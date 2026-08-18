@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Médias du Sénégal &middot; Xamsa Média{% endblock %}
+{% block nav_rub %}active{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap reveal">
+  <span class="eyebrow">Rubriques</span><h1>Médias du Sénégal{% if label %} &middot; {{ label }}{% endif %}</h1>
+  <p class="dek">Histoire, acteurs et paysage des médias sénégalais : télévisions, radios, presse écrite, numérique et podcasts.</p>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="subtabs">
+    <a href="{% url 'rubriques' %}">Spécialités</a>
+    <a href="{% url 'medias_senegal' %}" class="active">Médias du Sénégal</a>
+  </div>
+  <div class="subtabs lvl2">
+    {% for t in tabs %}<a href="{{ t.url }}" class="{% if t.slug == current %}active{% endif %}">{{ t.label }}</a>{% endfor %}
+  </div>
+  <div class="cardgrid">
+    {% for o in items %}
+    <a class="acard media-card reveal" target="_blank" rel="noopener"
+       href="{% if o.lien %}{{ o.lien }}{% else %}https://duckduckgo.com/?q={{ o.titre|urlencode }}+Sénégal+média{% endif %}">
+      <div class="media-logo">
+        {% if o.logo %}<img src="{{ o.logo.url }}" alt="Logo {{ o.titre }}" loading="lazy" onerror="this.remove()">
+        {% else %}<span class="ml-mono">{{ o.initiales }}</span>{% endif %}
+        <span class="badge pine">{{ o.get_type_display }}</span>
+      </div>
+      <div class="body"><h3>{{ o.titre }}</h3>{% if o.description %}<p>{{ o.description|truncatewords:22 }}</p>{% endif %}
+        <span class="meta">{% if o.meta %}{{ o.meta }} &middot; {% endif %}Accéder au média <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
+    </a>
+    {% empty %}{% include 'partials/bientot.html' with message="Cette rubrique sera bientôt enrichie. Revenez prochainement." %}{% endfor %}
+  </div>
+</div></section>
+{% endblock %}

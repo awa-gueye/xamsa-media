@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Xamsa Média{% endblock %}</title>
+  <script>(function(){try{var t=localStorage.getItem('xamsa-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=28">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <a class="brand" href="{% url 'home' %}">
+<img class="mark-img" src="{% static 'img/logo.png' %}" alt="Xamsa Média" width="42" height="42" style="width:42px;height:42px;border-radius:11px;object-fit:cover;flex:none;display:block">
+        <span class="name">Xamsa <span>Média</span></span>
+      </a>
+      <nav class="navpill">
+        <a href="{% url 'home' %}" class="{% block nav_home %}{% endblock %}">À la Une</a>
+        <span class="navitem"><a href="{% url 'rubriques' %}" class="{% block nav_rub %}{% endblock %}">Rubriques <svg class="icon chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+          <div class="dropdown"><a href="{% url 'rubriques' %}">Toutes les spécialités</a><a href="{% url 'medias_senegal' %}">Médias du Sénégal</a></div></span>
+        <span class="navitem"><a href="{% url 'dossiers' %}" class="{% block nav_dos %}{% endblock %}">Dossiers <svg class="icon chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+          <div class="dropdown"><a href="{% url 'dossiers' %}">Tous les dossiers</a><a href="{% url 'audio_video' %}">Audio &amp; Vidéo</a></div></span>
+        <span class="navitem"><a href="{% url 'academie' %}" class="{% block nav_aca %}{% endblock %}">Académie <svg class="icon chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+          <div class="dropdown"><a href="{% url 'academie_type' 'cours' %}">Cours</a><a href="{% url 'academie_type' 'formation' %}">Formations</a><a href="{% url 'academie_type' 'webinaire' %}">Webinaires</a><a href="{% url 'academie_type' 'ressource' %}">Ressources</a><a href="{% url 'academie_type' 'certification' %}">Certifications</a></div></span>
+        <span class="navitem"><a href="{% url 'communaute' %}" class="{% block nav_com %}{% endblock %}">Communauté <svg class="icon chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+          <div class="dropdown"><a href="{% url 'communaute_type' 'contribution' %}">Espace contribution</a><a href="{% url 'communaute_type' 'concours' %}">Concours</a><a href="{% url 'communaute_type' 'association' %}">Associations de presse</a><a href="{% url 'communaute_type' 'opportunite' %}">Opportunités</a></div></span>
+      </nav>
+      <div class="navtools">
+        {% if user.is_authenticated %}
+        <span class="navitem authbox">
+          <a href="#" class="userbtn">{% if user.profil.photo %}<img class="uav" src="{{ user.profil.photo.url }}" alt="">{% else %}<span class="uav">{{ user.first_name.0|default:user.username.0|upper }}</span>{% endif %}<span class="uname">{{ user.first_name|default:user.username }}</span> <svg class="icon chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+          <div class="dropdown dropdown-r">
+            <a href="{% url 'compte' %}">Mon compte</a>
+            <a href="{% url 'publier' %}">Publier un contenu</a>
+            {% if user.is_superuser %}<a href="/admin/">Administration</a>{% endif %}
+            <a href="{% url 'deconnexion' %}">Déconnexion</a>
+          </div>
+        </span>
+        {% else %}
+        <a href="{% url 'connexion' %}" class="authlink">Connexion</a>
+        <a href="{% url 'inscription' %}" class="btn btn-green btnsm">Inscription</a>
+        {% endif %}
+        {% if user.is_superuser %}<a class="iconbtn notif-bell" href="{% url 'moderation' %}" aria-label="Modération" title="Contenus en attente de validation"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3Z"/><path d="M9.5 12l2 2 3.5-4"/></svg>{% if moderation_en_attente %}<span class="notif-dot">{{ moderation_en_attente }}</span>{% endif %}</a>{% endif %}
+        {% if user.is_authenticated %}<a class="iconbtn notif-bell" href="{% url 'notifications' %}" aria-label="Notifications"><svg class="icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>{% if notifs_non_lues %}<span class="notif-dot">{{ notifs_non_lues }}</span>{% endif %}</a>{% endif %}
+        <button class="iconbtn theme-toggle" id="themeToggle" aria-label="Basculer le thème clair / sombre">
+          <svg class="icon ic-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+          <svg class="icon ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>
+        </button>
+        <button class="iconbtn" id="searchBtn" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+        <button class="iconbtn burger" id="burger" aria-label="Menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
+    <button class="iconbtn close" id="closeNav" aria-label="Fermer"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <a href="{% url 'home' %}">À la Une</a>
+    <a href="{% url 'rubriques' %}">Rubriques</a>
+    <a href="{% url 'dossiers' %}">Dossiers</a>
+    <a href="{% url 'academie' %}">Académie</a>
+    <a href="{% url 'communaute' %}">Communauté</a>
+    {% if user.is_authenticated %}<a href="{% url 'compte' %}">Mon compte</a>
+            <a href="{% url 'publier' %}">Publier un contenu</a><a href="{% url 'deconnexion' %}">Déconnexion</a>
+    {% else %}<a href="{% url 'connexion' %}">Connexion</a><a href="{% url 'inscription' %}">Inscription</a>{% endif %}
+  </div>
+
+  <div class="search-overlay" id="searchOverlay">
+    <button class="sclose" id="searchClose" aria-label="Fermer"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <form class="search-form" action="{% url 'recherche' %}" method="get">
+      <input type="search" name="q" id="searchInput" placeholder="Rechercher sur tout le site..." autocomplete="off">
+      <button type="submit" aria-label="Lancer la recherche"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+    </form>
+    <span class="search-hint">Appuyez sur Entrée pour rechercher</span>
+  </div>
+
+  {% if messages %}<div class="flash">{% for m in messages %}<div class="flash-item {{ m.tags }}">{{ m }}</div>{% endfor %}</div>{% endif %}
+
+  {% block content %}{% endblock %}
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <img class="foot-logo" src="{% static 'img/logo.png' %}" alt="Xamsa Média" width="46" height="46" style="width:46px;height:46px;border-radius:11px;object-fit:cover;display:block">
+          <div class="name">Xamsa <span>Média</span></div>
+          <p>Journalisme d'investigation, analyse des médias, académie et communauté. L'observatoire indépendant de la presse sénégalaise.</p>
+          <div class="social">
+            <a href="#" aria-label="Facebook"><svg class="icon" viewBox="0 0 24 24"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"/></svg></a>
+            <a href="#" aria-label="X"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
+            <a href="#" aria-label="Instagram"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          </div>
+        </div>
+        <div class="fcol">
+          <h4>Explorer</h4>
+          <a href="{% url 'home' %}">À la Une</a><a href="{% url 'rubriques' %}">Rubriques</a><a href="{% url 'dossiers' %}">Dossiers</a><a href="{% url 'academie' %}">Académie</a><a href="{% url 'communaute' %}">Communauté</a>
+        </div>
+        <div class="fcol">
+          <h4>Médias du Sénégal</h4>
+          <a href="{% url 'medias_senegal_type' 'tv' %}">Chaînes TV</a><a href="{% url 'medias_senegal_type' 'radio' %}">Radios</a><a href="{% url 'medias_senegal_type' 'presse' %}">Presse écrite</a><a href="{% url 'medias_senegal_type' 'numerique' %}">Médias numériques</a>
+        </div>
+        <div class="fcol news">
+          <h4>Lettre d'information</h4>
+          <p>Recevez chaque semaine notre revue critique des médias sénégalais.</p>
+          <div class="newsform">
+            <input type="email" placeholder="Votre adresse email">
+            <button aria-label="S'abonner"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></button>
+          </div>
+          <div class="contact">
+            <a href="mailto:xamsamedia@gmail.com"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> xamsamedia@gmail.com</a>
+            <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Dakar, Sénégal</span>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bot">
+        <span>&copy; 2026 Xamsa Média. Tous droits réservés.</span>
+        <span>Savoir &middot; Questionner &middot; Éclairer</span>
+      </div>
+    </div>
+  </footer>
+
+  {% include 'partials/chatbot.html' %}
+  <script src="{% static 'js/xamsa.js' %}?v=28"></script>
+</body>
+</html>

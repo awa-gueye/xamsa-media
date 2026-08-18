@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Mon compte &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap compte-hero">
+  <div class="ch-av">{% if profil.photo %}<img src="{{ profil.photo.url }}" alt="Photo de profil">{% else %}<span>{{ user.first_name.0|default:user.username.0|upper }}</span>{% endif %}</div>
+  <div>
+    <span class="eyebrow">Mon compte</span>
+    <h1>Bonjour {{ user.first_name|default:user.username }}</h1>
+    <p class="dek">{% if profil %}{{ profil.get_type_profil_display }}{% endif %}</p>
+  </div>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="compte-grid">
+    <div class="compte-card"><h3>Informations</h3>
+      <form method="post" enctype="multipart/form-data" class="photo-form">
+        {% csrf_token %}
+        <div class="photo-av">{% if profil.photo %}<img src="{{ profil.photo.url }}" alt="">{% else %}<span>{{ user.first_name.0|default:user.username.0|upper }}</span>{% endif %}</div>
+        <label class="btn btn-ghost btnsm">{% if profil.photo %}Changer la photo{% else %}Ajouter une photo{% endif %}<input type="file" name="photo" accept="image/*" onchange="this.form.submit()" hidden></label>
+      </form>
+      <ul class="infos">
+        <li><span>Nom</span><b>{{ user.get_full_name|default:'-' }}</b></li>
+        <li><span>Email</span><b>{{ user.email }}</b></li>
+        <li><span>Profil</span><b>{% if profil %}{{ profil.get_type_profil_display }}{% endif %}</b></li>
+        {% if profil.telephone %}<li><span>Téléphone</span><b>{{ profil.telephone }}</b></li>{% endif %}
+        {% if profil.localisation %}<li><span>Localisation</span><b>{{ profil.localisation }}</b></li>{% endif %}
+        {% if profil.organisation %}<li><span>Organisation</span><b>{{ profil.organisation }}</b></li>{% endif %}
+        <li><span>Inscrit depuis</span><b>{{ profil.date_inscription|date:"d F Y" }}</b></li>
+      </ul>
+    </div>
+    <div class="compte-card"><h3>Actions</h3>
+      <div class="compte-actions">
+        <a class="btn btn-green" href="{% url 'publier' %}">Publier un contenu <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+        <a class="btn btn-ghost" href="{% url 'modifier_profil' %}">Modifier mes informations <svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a>
+        <a class="btn btn-ghost" href="{% url 'profil_public' user.pk %}">Voir mon profil public <svg class="icon" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a>
+        <a class="btn btn-ghost" href="{% url 'mes_favoris' %}">Mes favoris <svg class="icon" viewBox="0 0 24 24"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1Z"/></svg></a>
+        {% if user.is_superuser %}<a class="btn btn-ghost" href="/admin/">Administration du site</a>{% endif %}
+        <a class="btn btn-ghost" href="{% url 'deconnexion' %}">Se déconnecter</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="compte-card" style="margin-top:1.4rem"><h3>Mes contributions</h3>
+    {% if contributions %}
+    <ul class="contrib-list">
+      {% for c in contributions %}
+      <li>
+        <div class="cmain">
+          <span class="ctype">{{ c.get_type_display }}</span><b class="ctitre">{{ c.titre }}</b>
+          <span class="cdate">{{ c.date|date:"d/m/Y" }}</span>
+          <span class="cstat {{ c.statut }}">{{ c.get_statut_display }}</span>
+        </div>
+        <div class="cactions">
+          {% if c.statut == 'publie' %}<a href="{% url 'publication_detail' c.pk %}" title="Voir la publication"><svg class="icon" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> Voir</a>{% endif %}
+          <a href="{% url 'contribution_modifier' c.pk %}" title="Modifier"><svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Modifier</a>
+          <a href="{% url 'contribution_supprimer' c.pk %}" class="cdel" title="Supprimer"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg> Supprimer</a>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="lead">Vous n'avez pas encore soumis de contribution. Cliquez sur « Publier un contenu » pour commencer.</p>{% endif %}
+  </div>
+</div></section>
+{% endblock %}

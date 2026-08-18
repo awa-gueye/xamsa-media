@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}{{ article.titre }} &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="lecture-hero">
+  {% if article.visuel %}<img class="bg" src="{{ article.visuel }}" alt="" onerror="this.remove()">{% endif %}
+  <div class="veil"></div>
+  <div class="lecture-hero-inner wrap">
+    <a class="retour" href="{% url 'home' %}"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Retour</a>
+    <span class="badge clay">{{ article.get_type_display }}{% if article.categorie %} &middot; {{ article.categorie }}{% endif %}</span>
+    <h1>{{ article.titre }}</h1>
+    <div class="meta"><span>Lecture {{ article.temps_lecture }} min</span><span class="dot"></span><span>{{ article.date_publication|date:"d F Y" }}</span></div>
+  </div>
+</section>
+<article class="lecture">
+  {% if article.chapo %}<p class="chapo">{{ article.chapo }}</p>{% endif %}
+  <div class="corps">{{ article.corps|linebreaks }}</div>
+  <div class="reactions">
+    <div class="share">
+      <span class="share-lbl">Partager</span>
+      <a class="share-btn" target="_blank" rel="noopener" aria-label="Partager sur WhatsApp"
+         href="https://wa.me/?text={{ article.titre|urlencode }}%20{{ request.build_absolute_uri|urlencode }}">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3Z"/><path d="M8.5 8.5c0 4 3 7 6.5 7 1-1 1-1.5.5-2l-1.6-1c-.4-.2-.6 0-.9.3s-.6.5-1 .3c-1-.5-2-1.5-2.5-2.5-.2-.4 0-.7.3-1s.5-.5.3-.9l-1-1.6c-.5-.5-1-.5-2 .5Z" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a class="share-btn" target="_blank" rel="noopener" aria-label="Partager sur Facebook"
+         href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"/></svg>
+      </a>
+      <a class="share-btn" target="_blank" rel="noopener" aria-label="Partager sur X"
+         href="https://twitter.com/intent/tweet?text={{ article.titre|urlencode }}&url={{ request.build_absolute_uri|urlencode }}">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20"/></svg>
+      </a>
+      <button class="share-btn share-copy" type="button" aria-label="Copier le lien" data-url="{{ request.build_absolute_uri }}">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="lecture-foot">
+    <span class="sig">Xamsa Média &middot; Rédaction</span>
+    <a class="link" href="{% if article.categorie %}{% url 'rubrique_detail' article.categorie.slug %}{% else %}{% url 'home' %}{% endif %}">Plus dans cette rubrique <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</article>
+{% endblock %}

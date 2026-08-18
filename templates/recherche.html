@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Recherche{% if q %} : {{ q }}{% endif %} &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap">
+  <span class="eyebrow">Recherche</span>
+  {% if q %}<h1>Résultats pour « {{ q }} »</h1>{% else %}<h1>Rechercher</h1>{% endif %}
+  <p class="dek">{% if q %}Dans les publications, la revue de presse et tous les espaces du site.{% else %}Saisissez un thème, une source ou un mot-clé.{% endif %}</p>
+  <form class="newsform" action="{% url 'recherche' %}" method="get" style="max-width:520px;margin-top:1rem">
+    <input type="search" name="q" value="{{ q }}" placeholder="Rechercher..." style="border-radius:999px">
+    <button aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+  </form>
+</div></section>
+
+{% if reponse_ia and reponse_ia.texte %}
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="ai-answer">
+    <div class="ai-answer-head">
+      <span class="ai-answer-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg></span>
+      <span>Réponse de Looy laaj</span>
+    </div>
+    <p class="ai-answer-body">{{ reponse_ia.texte|linebreaksbr }}</p>
+    {% if reponse_ia.sources %}
+    <div class="ai-answer-src">
+      <span class="ai-answer-src-lbl">Sources</span>
+      {% for s in reponse_ia.sources %}
+      <a href="{{ s.url }}" target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        <span>{{ s.titre }}</span><small> &middot; {{ s.origine }}</small>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div></section>
+{% endif %}
+
+{% if articles %}
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Nos publications</span><h2>Articles &amp; enquêtes</h2></div></div>
+  <div class="cardgrid">
+    {% for a in articles %}
+    <a class="acard reveal" href="{{ a.get_absolute_url }}">
+      <div class="thumb">{% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<span class="badge pine">{{ a.get_type_display }}</span></div>
+      <div class="body"><h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:16 }}</p>{% endif %}
+        <span class="meta">{{ a.categorie|default:'' }} &middot; {{ a.temps_lecture }} min</span></div>
+    </a>
+    {% endfor %}
+  </div>
+</div></section>
+{% endif %}
+
+{% if revue %}
+<section class="block curation" {% if articles %}{% else %}style="padding-top:0"{% endif %}><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Revue de presse</span><h2>Dans la presse</h2></div></div>
+  <div class="curgrid">
+    {% for it in revue %}
+    <a class="curcard reveal" href="{{ it.url }}" target="_blank" rel="noopener">
+      <div class="curthumb">{% if it.image_url %}<img src="{{ it.image_url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
+      <div class="curbody"><span class="cursrc">{{ it.source.nom }}</span><h3>{{ it.titre_propre }}</h3>
+        {% if it.resume %}<p>{{ it.resume_propre|truncatewords:18 }}</p>{% endif %}
+        <span class="link">Lire la source <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div>
+    </a>
+    {% endfor %}
+  </div>
+</div></section>
+{% endif %}
+
+{% if autres %}
+<section class="block" {% if articles or revue %}{% else %}style="padding-top:0"{% endif %}><div class="wrap">
+  <div class="sec-head"><div><span class="eyebrow">Espaces</span><h2>Académie, communauté &amp; médias</h2></div></div>
+  <div class="cardgrid">
+    {% for o in autres %}
+    <a class="acard reveal" href="{{ o.lien|default:'#' }}" {% if o.lien %}target="_blank" rel="noopener"{% endif %}>
+      <div class="body"><span class="badge clay">{{ o.espace }}</span><h3 style="margin-top:.6rem">{{ o.titre }}</h3>{% if o.desc %}<p>{{ o.desc|truncatewords:20 }}</p>{% endif %}</div>
+    </a>
+    {% endfor %}
+  </div>
+</div></section>
+{% endif %}
+
+{% if q and not articles and not revue and not autres %}
+<section class="block" style="padding-top:0"><div class="wrap">
+  <p class="lead">Aucun résultat pour « {{ q }} ». Essayez un autre mot-clé, ou lancez l'ingestion RSS pour enrichir la base.</p>
+</div></section>
+{% endif %}
+{% endblock %}

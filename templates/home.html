@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Xamsa Média, À la Une{% endblock %}
+{% block nav_home %}active{% endblock %}
+{% block content %}
+
+<section class="home-hero">
+  <div class="hero-bg" id="heroBg">
+    {% for it in latest %}<div class="hbg {% if forloop.first %}on{% endif %}"{% if it.image_url %} style="background-image:url('{{ it.image_url }}')"{% endif %}></div>
+    {% empty %}<div class="hbg on"></div>{% endfor %}
+  </div>
+  <div class="hero-veil"></div>
+  <div class="hero-content">
+    <span class="dm-label" id="dmLabel">Dernière minute{% if une %} &middot; {{ une.date|date:"d/m H:i" }}{% endif %}</span>
+    <div class="hero-carousel" id="heroCarousel">
+      {% for it in latest %}
+      <div class="hero-slide {% if forloop.first %}on{% endif %}">
+        <a href="{{ it.url }}" target="_blank" rel="noopener" style="color:#fff"><h1>{{ it.titre_propre }}</h1></a>
+        <span class="src"><span class="tag">{{ it.source.nom }}</span> {{ it.date|date:"H:i" }}</span>
+      </div>
+      {% empty %}
+      <div class="hero-slide on"><h1>L'actualité du Sénégal, en direct.</h1><span class="src">Lancez python manage.py ingest pour afficher les dernières nouvelles</span></div>
+      {% endfor %}
+    </div>
+    <div class="hero-dots" id="heroDots">
+      {% for it in latest %}<button {% if forloop.first %}class="on"{% endif %} data-i="{{ forloop.counter0 }}"></button>{% endfor %}
+    </div>
+    <form class="hero-search" action="{% url 'recherche' %}" method="get">
+      <input type="search" name="q" placeholder="Rechercher une info, une source, un thème sur tout le site..." autocomplete="off">
+      <button type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+    </form>
+  </div>
+  </div>
+  <a class="scroll-ind" href="#revue" aria-label="Descendre"><svg class="icon" viewBox="0 0 24 24" style="font-size:1.6rem"><rect x="8" y="3" width="8" height="14" rx="4"/><path d="M12 7v3"/><path d="M9 20l3 2 3-2"/></svg></a>
+</section>
+
+<section class="presswall">
+  <div class="head"><span class="t">Le Mur de la presse</span><span class="live">En continu &middot; dernières unes</span></div>
+  <div class="marquee"><div class="track" id="track">
+    {% for it in mur %}
+    <a class="une" href="{{ it.url }}" target="_blank" rel="noopener">
+      <div class="thumb">{% if it.image_url %}<img src="{{ it.image_url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
+      <div class="body"><div class="src">{{ it.source.nom }}<span class="cat">{{ it.date|date:"d/m H:i" }}</span></div><div class="hl">{{ it.titre_propre }}</div></div>
+    </a>
+    {% empty %}<div class="une"><div class="body"><div class="src">Aucune source</div><div class="hl">Lancez python manage.py ingest</div></div></div>{% endfor %}
+  </div></div>
+</section>
+
+{% if brief %}
+<section class="block" style="padding-bottom:0"><div class="wrap">
+  <div class="brief-card reveal">
+    <div class="brief-head">
+      <span class="brief-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg></span>
+      <div><span class="eyebrow">Généré par Looy laaj</span><h2>Le brief du jour</h2></div>
+      <span class="brief-date">{{ brief.date|date:"l d F Y"|capfirst }}</span>
+    </div>
+    <div class="brief-body">{{ brief.contenu|linebreaksbr }}</div>
+    <p class="brief-foot">Synthèse automatique de la revue de presse. Vérifiez toujours l'information à la source.</p>
+  </div>
+</div></section>
+{% endif %}
+
+<section class="block" id="revue">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="eyebrow">Revue de presse du jour</span><h2>La titraille, décryptée</h2>
+        <p class="lead">L'analyse critique des unes sénégalaises, africaines et internationales, avec le lien vers la source.</p></div>
+      <a class="more" href="{% url 'dossiers' %}">Toute la revue <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="revgrid">
+      {% for it in revue %}
+      <article class="rev reveal">
+        <div class="thumb">{% if it.image_url %}<img src="{{ it.image_url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
+        <div class="body">
+          <div class="src"><span class="name">{{ it.source.nom }}</span><span class="time">{{ it.date|date:"H:i" }}</span></div>
+          <p class="analysis">{{ it.resume_propre|default:it.titre_propre|truncatewords:26 }}</p>
+          <div class="rev-foot">
+            <a class="link" href="{{ it.url }}" target="_blank" rel="noopener">Lire la source <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+            <span class="rev-share">
+              <a class="share-mini" target="_blank" rel="noopener" aria-label="Partager sur WhatsApp"
+                 href="https://wa.me/?text={{ it.titre_propre|urlencode }}%20{{ it.url|urlencode }}">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3Z"/><path d="M8.5 8.5c0 4 3 7 6.5 7 1-1 1-1.5.5-2l-1.6-1c-.4-.2-.6 0-.9.3s-.6.5-1 .3c-1-.5-2-1.5-2.5-2.5-.2-.4 0-.7.3-1s.5-.5.3-.9l-1-1.6c-.5-.5-1-.5-2 .5Z" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <button class="share-mini share-copy" type="button" data-url="{{ it.url }}" aria-label="Copier le lien">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>
+              </button>
+            </span>
+          </div>
+        </div>
+      </article>
+      {% empty %}<p class="lead">La revue se remplit avec l'ingestion RSS.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if enquetes %}
+<section class="block dark">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="eyebrow">Le fil d'enquêtes</span><h2>Nos productions au long cours</h2></div>
+      <a class="more" href="{% url 'dossiers' %}">Toutes les enquêtes <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="spotlight">
+      {% for a in enquetes %}{% if forloop.first %}
+      <a class="spot-main reveal" href="{{ a.get_absolute_url }}">
+        {% if a.visuel %}<img src="{{ a.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div>
+        <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
+        <h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:26 }}</p>{% endif %}
+      </a>
+      <div class="spot-side">
+        {% endif %}{% endfor %}
+        {% for a in enquetes %}{% if not forloop.first and forloop.counter <= 3 %}
+        <a class="tile {% if forloop.counter == 2 %}green{% else %}clay{% endif %}" href="{{ a.get_absolute_url }}">
+          <span class="ic"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          <h3>{{ a.titre|truncatewords:8 }}</h3><p>{{ a.get_type_display }} &middot; {{ a.temps_lecture }} min</p>
+        </a>
+        {% endif %}{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if publications %}
+<section class="block"><div class="wrap">
+  <div class="sec-head reveal"><div><span class="eyebrow">La communauté publie</span><h2>Dernières contributions</h2>
+    <p class="lead">Les contenus proposés par la communauté et validés par la rédaction.</p></div>
+    <a class="more" href="{% url 'communaute_type' 'contribution' %}">Voir tout <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+  <div class="cardgrid">
+    {% for c in publications %}
+    <a class="acard reveal" href="{% url 'publication_detail' c.pk %}">
+      <div class="thumb">{% if c.image %}<img src="{{ c.image.url }}" alt="" loading="lazy">{% endif %}<span class="badge clay">{{ c.get_type_display }}</span></div>
+      <div class="body"><h3>{{ c.titre }}</h3>{% if c.resume %}<p>{{ c.resume|truncatewords:18 }}</p>{% endif %}
+        <span class="meta">Par {{ c.auteur.first_name|default:c.auteur.username }}</span></div>
+    </a>
+    {% endfor %}
+  </div>
+</div></section>
+{% endif %}
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head reveal"><div><span class="eyebrow">Explorer</span><h2>Toutes les sections</h2>
+      <p class="lead">Chaque espace a sa propre matière.</p></div></div>
+    <div class="cardgrid">
+      <a class="acard reveal" href="{% url 'rubriques' %}">
+        <div class="thumb sec-thumb sec-actu"><img src="{% static 'img/sections/actualites.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Actualités</span></div>
+        <div class="body"><h3>Actualités &amp; rubriques</h3><p>Les pôles éditoriaux et la rubrique spéciale Médias du Sénégal.</p><span class="meta">Explorer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
+      <a class="acard reveal" href="{% url 'academie' %}">
+        <div class="thumb sec-thumb sec-aca"><img src="{% static 'img/sections/academie.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge clay">Académie</span></div>
+        <div class="body"><h3>Académie</h3><p>Cours, formations, webinaires, ressources et certifications.</p><span class="meta">Se former <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
+      <a class="acard reveal" href="{% url 'communaute' %}">
+        <div class="thumb sec-thumb sec-com"><img src="{% static 'img/sections/communaute.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Communauté</span></div>
+        <div class="body"><h3>Communauté</h3><p>Contributions, concours, associations de presse et opportunités.</p><span class="meta">Participer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
