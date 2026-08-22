@@ -36,14 +36,18 @@
 
 <section class="presswall">
   <div class="head"><span class="t">Le Mur de la presse</span><span class="live">En continu &middot; dernières unes</span></div>
-  <div class="marquee"><div class="track" id="track">
-    {% for it in mur %}
-    <a class="une" href="{{ it.url }}" target="_blank" rel="noopener">
-      <div class="thumb">{% if it.image_url %}<img src="{{ it.image_url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
-      <div class="body"><div class="src">{{ it.source.nom }}<span class="cat">{{ it.date|date:"d/m H:i" }}</span></div><div class="hl">{{ it.titre_propre }}</div></div>
-    </a>
-    {% empty %}<div class="une"><div class="body"><div class="src">Aucune source</div><div class="hl">Lancez python manage.py ingest</div></div></div>{% endfor %}
-  </div></div>
+  <div class="marquee-wrap">
+    <button class="wall-arrow prev" id="wallPrev" type="button" aria-label="Voir les précédentes"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="marquee"><div class="track" id="track">
+      {% for it in mur %}
+      <a class="une" href="{{ it.url }}" target="_blank" rel="noopener">
+        <div class="thumb">{% if it.image_url %}<img src="{{ it.image_url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
+        <div class="body"><div class="src">{{ it.source.nom }}<span class="cat">{{ it.date|date:"d/m H:i" }}</span></div><div class="hl">{{ it.titre_propre }}</div></div>
+      </a>
+      {% empty %}<div class="une"><div class="body"><div class="src">Aucune source</div><div class="hl">Lancez python manage.py ingest</div></div></div>{% endfor %}
+    </div></div>
+    <button class="wall-arrow next" id="wallNext" type="button" aria-label="Voir les suivantes"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
 </section>
 
 {% if brief %}

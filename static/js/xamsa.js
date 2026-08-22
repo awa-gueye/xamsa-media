@@ -84,6 +84,44 @@
   collect(); bindDots(); auto();
   if (track && track.children.length) { track.innerHTML = track.innerHTML + track.innerHTML; }
 
+  // ---- Mur de la presse : defilement auto (rAF) + fleches gauche/droite ----
+  var marquee = document.querySelector('.marquee');
+  var wallPaused = false, wallResumeTimer;
+  function wallLoop() {
+    if (marquee && track && !wallPaused && !reduce) {
+      marquee.scrollLeft += 0.5;
+      var moitie = track.scrollWidth / 2;   // contenu duplique : on boucle a la moitie
+      if (moitie > 0 && marquee.scrollLeft >= moitie) marquee.scrollLeft -= moitie;
+    }
+    requestAnimationFrame(wallLoop);
+  }
+  function wallPause() { wallPaused = true; clearTimeout(wallResumeTimer); }
+  function wallResume(delai) { clearTimeout(wallResumeTimer); wallResumeTimer = setTimeout(function () { wallPaused = false; }, delai || 0); }
+  if (marquee && track) {
+    marquee.addEventListener('mouseenter', wallPause);
+    marquee.addEventListener('mouseleave', function () { wallResume(300); });
+    marquee.addEventListener('touchstart', wallPause, { passive: true });
+    marquee.addEventListener('touchend', function () { wallResume(3000); });
+    marquee.addEventListener('wheel', function () { wallPause(); wallResume(2500); }, { passive: true });
+    requestAnimationFrame(wallLoop);
+    var pas = function () { var c = marquee.querySelector('.une'); return c ? c.offsetWidth + 16 : 240; };
+    // Defilement fluide fait main (scrollBy 'smooth' n'est pas fiable partout).
+    function wallVers(cible) {
+      wallPause();
+      var depart = marquee.scrollLeft, dist = cible - depart, t0 = null, duree = 380;
+      function anim(ts) {
+        if (t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / duree);
+        marquee.scrollLeft = depart + dist * (0.5 - 0.5 * Math.cos(Math.PI * p));
+        if (p < 1) requestAnimationFrame(anim); else wallResume(3500);
+      }
+      requestAnimationFrame(anim);
+    }
+    var prev = document.getElementById('wallPrev'), next = document.getElementById('wallNext');
+    if (prev) prev.onclick = function () { wallVers(marquee.scrollLeft - pas() * 2); };
+    if (next) next.onclick = function () { wallVers(marquee.scrollLeft + pas() * 2); };
+  }
+
   // Rafraichissement en direct toutes les 45 s.
   function poll() {
     fetch('/api/latest/').then(function (r) { return r.json(); }).then(function (d) {

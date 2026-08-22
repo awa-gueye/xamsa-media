@@ -184,14 +184,14 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 # --- Email (reinitialisation du mot de passe) ---
-# Envoi reel des que EMAIL_HOST est defini dans .env (ex. Gmail : smtp.gmail.com).
-# Sinon : backend console (l'email s'affiche dans le terminal, zero config).
+# Envoi reel SEULEMENT si EMAIL_HOST **et** EMAIL_HOST_PASSWORD sont definis
+# (sinon backend console : evite un plantage 500 quand le mot de passe manque).
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
-if EMAIL_HOST:
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+if EMAIL_HOST and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
     EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', '0') == '1'
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '0' if EMAIL_USE_SSL else '1') == '1'
     EMAIL_TIMEOUT = 20

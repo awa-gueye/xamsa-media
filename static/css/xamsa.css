@@ -67,10 +67,17 @@ header{position:sticky;top:0;z-index:60;padding:.7rem 0}
 .presswall .head .live{font-family:var(--sans);font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ochre-soft);display:inline-flex;align-items:center;gap:.45em}
 .presswall .head .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ochre);animation:pulse 2s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,137,31,.6)}70%{box-shadow:0 0 0 9px rgba(192,137,31,0)}100%{box-shadow:0 0 0 0 rgba(192,137,31,0)}}
-.marquee{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
-.track{display:flex;gap:1rem;width:max-content;animation:scrollx 48s linear infinite}
-.marquee:hover .track{animation-play-state:paused}
-@keyframes scrollx{to{transform:translateX(-50%)}}
+.marquee-wrap{position:relative;width:min(1200px,92vw);margin:0 auto}
+.marquee{position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.marquee::-webkit-scrollbar{display:none}
+.track{display:flex;gap:1rem;width:max-content}
+/* Fleches de navigation du mur de la presse */
+.wall-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:42px;height:42px;border-radius:50%;border:none;background:var(--pine-deep);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 20px -8px rgba(0,0,0,.6);opacity:.92;transition:.15s}
+.wall-arrow:hover{opacity:1;background:#000}
+.wall-arrow .icon{width:20px;height:20px}
+.wall-arrow.prev{left:-8px}
+.wall-arrow.next{right:-8px}
+@media(max-width:560px){.wall-arrow{width:36px;height:36px}.wall-arrow.prev{left:0}.wall-arrow.next{right:0}}
 .une{width:230px;flex:none;background:var(--pine-deep);border:1px solid rgba(231,206,142,.16);border-radius:14px;overflow:hidden;transition:.25s}
 .une:hover{transform:translateY(-5px);border-color:var(--ochre)}
 .une .thumb{height:112px;background:linear-gradient(135deg,#20477e,#0d2038);position:relative}
@@ -284,6 +291,14 @@ footer{background:linear-gradient(180deg,var(--cream),var(--cream-2));padding:3.
   .cardgrid,.rubgrid,.avgrid,.trendgrid,.revgrid{grid-template-columns:1fr}
   .foot-top{grid-template-columns:1fr}
   .fab .txt{display:none}.fab{padding:.85rem;border-radius:50%}
+}
+/* Petits ecrans : navbar compacte (evite le debordement des icones) */
+@media(max-width:480px){
+  .navbar{padding:.4rem .5rem .4rem .9rem;gap:.5rem}
+  .navtools{gap:.3rem}
+  .iconbtn{width:38px;height:38px}
+  .brand .name{font-size:1.1rem}
+  .mark-img{width:36px!important;height:36px!important}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}
