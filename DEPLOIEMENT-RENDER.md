@@ -36,8 +36,11 @@ git push -u origin main
 2. Cliquez **New +** → **Blueprint**.
 3. Sélectionnez votre dépôt `xamsa-media`. Render lit `render.yaml` et propose
    de créer : un service web `xamsa-media` + une base `xamsa-db` (PostgreSQL).
-4. Cliquez **Apply**. Render lance le build (installe, collecte le statique,
-   applique les migrations, insère les données réelles et les logos).
+4. Cliquez **Apply**. Render lance le **build** (`build.sh` : installe les
+   dépendances et collecte le statique), puis au **démarrage** (`start.sh`)
+   applique les migrations, insère les données réelles + logos et crée l'admin.
+   (Les opérations base de données sont au démarrage, pas au build : le PostgreSQL
+   interne de Render n'est joignable qu'au runtime.)
 
 ## 3. Renseigner les secrets
 
@@ -58,8 +61,8 @@ automatiquement.) Enregistrez : Render redéploie.
 ## 4. Le compte administrateur (aucun shell nécessaire)
 
 Le palier gratuit de Render **ne donne pas accès au Shell/SSH** : la commande
-interactive `createsuperuser` n'est donc pas utilisable. C'est déjà géré : à
-chaque déploiement, `build.sh` lance `python manage.py creer_admin`, qui **crée
+interactive `createsuperuser` n'est donc pas utilisable. C'est déjà géré : au
+démarrage, `start.sh` lance `python manage.py creer_admin`, qui **crée
 l'administrateur** à partir des variables `ADMIN_EMAIL` et `ADMIN_PASSWORD`
 renseignées à l'étape 3.
 

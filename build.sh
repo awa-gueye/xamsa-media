@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
-# Etapes de build executees par Render a chaque deploiement.
+# Etapes de BUILD (Render) : PAS d'acces base de donnees ici -- le nom d'hote
+# interne du PostgreSQL n'est resolvable qu'au runtime. Les migrations, le seed
+# et la creation de l'admin sont faits au demarrage (voir start.sh).
 set -o errexit
 
 pip install -r requirements.txt
 
-# Fichiers statiques (servis par WhiteNoise).
+# Fichiers statiques (servis par WhiteNoise). N'a pas besoin de la base.
 python manage.py collectstatic --no-input
-
-# Base de donnees : applique les migrations.
-python manage.py migrate
-
-# Donnees structurelles reelles (idempotent) : categories, sources RSS,
-# annuaire des medias senegalais + import automatique des logos.
-python manage.py seed
-
-# Compte administrateur (sans shell) : cree depuis ADMIN_EMAIL / ADMIN_PASSWORD.
-python manage.py creer_admin
