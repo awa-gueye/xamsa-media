@@ -26,6 +26,11 @@ services:
         fromDatabase:
           name: xamsa-db
           property: connectionString  # branche automatiquement le PostgreSQL
+      # --- Compte administrateur (cree au build, sans shell) ---
+      - key: ADMIN_EMAIL
+        sync: false                   # ex. xamsamedia@gmail.com (dashboard)
+      - key: ADMIN_PASSWORD
+        sync: false                   # mot de passe admin fort (dashboard)
       # --- Stockage permanent des fichiers envoyes (Cloudinary, gratuit) ---
       - key: CLOUDINARY_URL
         sync: false                   # cloudinary://cle:secret@cloud (dashboard)

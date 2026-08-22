@@ -13,3 +13,6 @@ python manage.py migrate
 # Donnees structurelles reelles (idempotent) : categories, sources RSS,
 # annuaire des medias senegalais + import automatique des logos.
 python manage.py seed
+
+# Compte administrateur (sans shell) : cree depuis ADMIN_EMAIL / ADMIN_PASSWORD.
+python manage.py creer_admin

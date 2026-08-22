@@ -48,17 +48,27 @@ marquées « à définir » :
 |---|---|
 | `GEMINI_API_KEY` | votre clé Gemini (https://aistudio.google.com/apikey) |
 | `EMAIL_HOST_PASSWORD` | le mot de passe d'application Gmail (xamsamedia@gmail.com) |
+| `CLOUDINARY_URL` | l'URL Cloudinary (voir « Fichiers envoyés » ci-dessous) |
+| `ADMIN_EMAIL` | l'email de l'administrateur (ex. xamsamedia@gmail.com) |
+| `ADMIN_PASSWORD` | un mot de passe administrateur fort |
 
 (La clé secrète Django, l'URL de la base et le domaine sont configurés
 automatiquement.) Enregistrez : Render redéploie.
 
-## 4. Créer le compte administrateur
+## 4. Le compte administrateur (aucun shell nécessaire)
 
-Une fois le déploiement « Live », ouvrez le service → onglet **Shell** et lancez :
+Le palier gratuit de Render **ne donne pas accès au Shell/SSH** : la commande
+interactive `createsuperuser` n'est donc pas utilisable. C'est déjà géré : à
+chaque déploiement, `build.sh` lance `python manage.py creer_admin`, qui **crée
+l'administrateur** à partir des variables `ADMIN_EMAIL` et `ADMIN_PASSWORD`
+renseignées à l'étape 3.
 
-```bash
-python manage.py createsuperuser
-```
+- Le compte n'est créé qu'une seule fois (idempotent) : les redéploiements
+  suivants n'écrasent pas son mot de passe.
+- Vous vous connectez ensuite sur le site avec cet email et ce mot de passe, et
+  l'administration est accessible sur `/admin/`.
+- Si vous oubliez le mot de passe, utilisez « Mot de passe oublié ? » sur la page
+  de connexion (l'email de réinitialisation part via xamsamedia@gmail.com).
 
 Votre site est en ligne à l'adresse `https://xamsa-media.onrender.com`
 (le nom exact est affiché en haut du service).
@@ -73,11 +83,26 @@ Votre site est en ligne à l'adresse `https://xamsa-media.onrender.com`
 - **Base PostgreSQL gratuite** : expire après 30 jours sur Render. Pour une base
   gratuite durable, créez-en une sur https://neon.tech (gratuit, sans expiration)
   et collez son URL dans la variable `DATABASE_URL` — aucun changement de code.
-- **Fichiers envoyés** (photos de profil, images des contributions) : le palier
-  gratuit n'a pas de disque persistant, ils sont perdus à chaque redéploiement.
-  Les logos des médias, eux, sont régénérés automatiquement à chaque build.
-  Pour rendre les envois permanents, brancher un stockage cloud gratuit
-  (ex. Cloudinary) — à faire dans un second temps.
+- **Fichiers envoyés** (photos de profil, images des contributions, logos) :
+  réglé via **Cloudinary** (voir ci-dessous). Sans lui, ils seraient perdus à
+  chaque redéploiement (pas de disque persistant gratuit).
+
+## Fichiers envoyés permanents (Cloudinary, gratuit)
+
+Le palier gratuit de Render n'a pas de disque persistant : les fichiers envoyés
+seraient effacés à chaque redéploiement. La solution : les stocker sur
+**Cloudinary** (offre gratuite, 25 Go), servis par son CDN.
+
+1. Créez un compte gratuit sur https://cloudinary.com
+2. Sur le **Dashboard**, copiez la valeur **API Environment variable** — c'est une
+   URL de la forme `cloudinary://<api_key>:<api_secret>@<cloud_name>`.
+3. Dans Render → service `xamsa-media` → **Environment**, collez-la dans la
+   variable `CLOUDINARY_URL`. Enregistrez (Render redéploie).
+
+C'est tout : dès que `CLOUDINARY_URL` est présent, toutes les images envoyées
+(profils, contributions) et les logos des médias sont stockés durablement sur
+Cloudinary. Sans cette variable, l'application utilise le disque local (pratique
+en développement). Aucun changement de code, aucun risque : c'est automatique.
 
 ## Redéployer après une modification
 
