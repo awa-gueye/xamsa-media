@@ -84,7 +84,8 @@ _DATABASE_URL = os.environ.get('DATABASE_URL', '')
 if _DATABASE_URL:
     import dj_database_url
     DATABASES = {
-        'default': dj_database_url.parse(_DATABASE_URL, conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.parse(
+            _DATABASE_URL, conn_max_age=600, conn_health_checks=True, ssl_require=True)
     }
 else:
     DATABASES = {
@@ -201,3 +202,16 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Xamsa Média <no-reply@xamsa.sn>')
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # lien valable 24 h
+
+# --- Journalisation : afficher les erreurs (500) dans la console (logs Render) ---
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'simple': {'format': '[{levelname}] {name}: {message}', 'style': '{'}},
+    'handlers': {'console': {'class': 'logging.StreamHandler', 'formatter': 'simple'}},
+    'root': {'handlers': ['console'], 'level': 'INFO'},
+    'loggers': {
+        # Trace complete des erreurs de requete (500) meme quand DEBUG=0.
+        'django.request': {'handlers': ['console'], 'level': 'ERROR', 'propagate': False},
+    },
+}

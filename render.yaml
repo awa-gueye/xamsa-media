@@ -1,10 +1,10 @@
 # Blueprint Render : deploiement automatique de Xamsa Media (gratuit).
 # Depuis le dashboard Render : "New +" -> "Blueprint" -> selectionner ce depot.
-databases:
-  - name: xamsa-db
-    plan: free
-    databaseName: xamsa
-    user: xamsa
+#
+# Base de donnees : on utilise une base PostgreSQL EXTERNE (Neon, gratuit, sans
+# expiration). Son nom d'hote est PUBLIC donc resolvable partout -- contrairement
+# a l'hote INTERNE d'une base managee Render (dpg-xxx-a) qui provoque des erreurs
+# "could not translate host name". Renseignez DATABASE_URL dans le dashboard.
 
 services:
   - type: web
@@ -24,9 +24,8 @@ services:
       - key: DJANGO_SECRET_KEY
         generateValue: true          # Render genere une cle secrete forte
       - key: DATABASE_URL
-        fromDatabase:
-          name: xamsa-db
-          property: connectionString  # branche automatiquement le PostgreSQL
+        sync: false                   # URL PostgreSQL Neon (dashboard) :
+                                      # postgresql://user:pass@ep-xxx.neon.tech/db?sslmode=require
       # --- Compte administrateur (cree au build, sans shell) ---
       - key: ADMIN_EMAIL
         sync: false                   # ex. xamsamedia@gmail.com (dashboard)

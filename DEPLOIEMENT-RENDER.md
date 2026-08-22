@@ -3,8 +3,13 @@
 Render est la meilleure option gratuite pour une application Django (Netlify ne
 fait tourner que du statique ; Railway n'a plus de vrai palier gratuit).
 
-Ce que Render fournit gratuitement : un **service web** + une base **PostgreSQL**.
-Tout est déjà préparé dans le dépôt (`render.yaml`, `build.sh`, config prod).
+Render fournit gratuitement le **service web**. Pour la base de données, on
+utilise **Neon** (PostgreSQL gratuit, sans expiration) plutôt que la base
+managée de Render : son nom d'hôte est **public**, donc toujours résolvable —
+la base interne de Render (`dpg-xxx-a`) provoque des erreurs « could not
+translate host name » au runtime sur le palier gratuit.
+
+Tout est déjà préparé dans le dépôt (`render.yaml`, `build.sh`, `start.sh`, config prod).
 
 ---
 
@@ -30,25 +35,31 @@ git push -u origin main
 > Le fichier `.env` et la base locale `db.sqlite3` ne sont PAS envoyés
 > (protégés par `.gitignore`). Les secrets se règlent dans Render (étape 3).
 
-## 2. Créer le service sur Render (Blueprint)
+## 2. Créer la base de données (Neon, gratuit)
+
+1. Compte gratuit sur https://neon.tech (connexion avec GitHub).
+2. **Create project** (choisissez une région proche, ex. Europe). Neon crée une
+   base et affiche une **Connection string**.
+3. Copiez cette URL (forme `postgresql://user:pass@ep-xxx.neon.tech/dbname?sslmode=require`).
+   Gardez-la pour l'étape 4.
+
+## 3. Créer le service sur Render (Blueprint)
 
 1. Créez un compte gratuit sur https://render.com (connexion avec GitHub).
 2. Cliquez **New +** → **Blueprint**.
-3. Sélectionnez votre dépôt `xamsa-media`. Render lit `render.yaml` et propose
-   de créer : un service web `xamsa-media` + une base `xamsa-db` (PostgreSQL).
-4. Cliquez **Apply**. Render lance le **build** (`build.sh` : installe les
-   dépendances et collecte le statique), puis au **démarrage** (`start.sh`)
-   applique les migrations, insère les données réelles + logos et crée l'admin.
-   (Les opérations base de données sont au démarrage, pas au build : le PostgreSQL
-   interne de Render n'est joignable qu'au runtime.)
+3. Sélectionnez votre dépôt `xamsa-media`. Render lit `render.yaml` et propose de
+   créer le service web `xamsa-media`.
+4. Cliquez **Apply**. Render lance le **build** (`build.sh` : dépendances +
+   statique), puis au **démarrage** (`start.sh`) applique les migrations, insère
+   les données réelles + logos et crée l'admin.
 
-## 3. Renseigner les secrets
+## 4. Renseigner les secrets
 
-Dans le service `xamsa-media` → onglet **Environment**, renseignez les variables
-marquées « à définir » :
+Dans le service `xamsa-media` → onglet **Environment**, renseignez :
 
 | Variable | Valeur |
 |---|---|
+| `DATABASE_URL` | l'URL Neon copiée à l'étape 2 (`postgresql://...?sslmode=require`) |
 | `GEMINI_API_KEY` | votre clé Gemini (https://aistudio.google.com/apikey) |
 | `EMAIL_HOST_PASSWORD` | le mot de passe d'application Gmail (xamsamedia@gmail.com) |
 | `CLOUDINARY_URL` | l'URL Cloudinary (voir « Fichiers envoyés » ci-dessous) |
@@ -58,7 +69,7 @@ marquées « à définir » :
 (La clé secrète Django, l'URL de la base et le domaine sont configurés
 automatiquement.) Enregistrez : Render redéploie.
 
-## 4. Le compte administrateur (aucun shell nécessaire)
+## 5. Le compte administrateur (aucun shell nécessaire)
 
 Le palier gratuit de Render **ne donne pas accès au Shell/SSH** : la commande
 interactive `createsuperuser` n'est donc pas utilisable. C'est déjà géré : au
@@ -83,9 +94,9 @@ Votre site est en ligne à l'adresse `https://xamsa-media.onrender.com`
 - **Mise en veille** : le service s'endort après 15 min sans visite ; la
   première visite suivante prend ~30 à 60 s (réveil). La revue de presse RSS et
   le brief du jour se rafraîchissent quand il y a du trafic.
-- **Base PostgreSQL gratuite** : expire après 30 jours sur Render. Pour une base
-  gratuite durable, créez-en une sur https://neon.tech (gratuit, sans expiration)
-  et collez son URL dans la variable `DATABASE_URL` — aucun changement de code.
+- **Base de données (Neon)** : gratuite et sans expiration. Son nom d'hôte public
+  évite les erreurs « could not translate host name » de la base interne de Render.
+  Pour changer de base, il suffit de modifier `DATABASE_URL` — aucun code à toucher.
 - **Fichiers envoyés** (photos de profil, images des contributions, logos) :
   réglé via **Cloudinary** (voir ci-dessous). Sans lui, ils seraient perdus à
   chaque redéploiement (pas de disque persistant gratuit).
