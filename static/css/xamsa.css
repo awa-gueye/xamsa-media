@@ -278,8 +278,14 @@ footer{background:linear-gradient(180deg,var(--cream),var(--cream-2));padding:3.
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:1000px){
-  .navpill{display:none}
-  .burger{display:grid}
+  /* Onglets en haut, comme sur la machine : bande defilable sur 2e rangee */
+  .navbar{flex-wrap:wrap;row-gap:.5rem;border-radius:18px;padding:.55rem .7rem}
+  .navpill{display:flex;order:3;width:100%;overflow-x:auto;overflow-y:hidden;justify-content:flex-start;scrollbar-width:none;-ms-overflow-style:none}
+  .navpill::-webkit-scrollbar{display:none}
+  .navpill a{white-space:nowrap;flex:none}
+  .navpill .chev{display:none}            /* tap sur l'onglet = navigation directe */
+  .navtools{order:2}
+  .burger{display:grid}                    /* menu complet + compte */
   .hero-grid{grid-template-columns:1fr}
   .hero-card{max-width:420px;aspect-ratio:16/12}
   .spotlight{grid-template-columns:1fr}
@@ -299,6 +305,16 @@ footer{background:linear-gradient(180deg,var(--cream),var(--cream-2));padding:3.
   .iconbtn{width:38px;height:38px}
   .brand .name{font-size:1.1rem}
   .mark-img{width:36px!important;height:36px!important}
+}
+/* Mobile/tablette : contenu toujours visible + animations lourdes coupees (fluidite) */
+@media(max-width:768px){
+  .reveal{opacity:1!important;transform:none!important}
+  .hero-card{animation:none}
+  .grad-word{animation:none;background:none;-webkit-text-fill-color:currentColor;color:var(--clay-soft)}
+  .hero-bg .hbg{transition:opacity .6s ease}
+  .hero-bg .hbg.on{transform:none}
+  .hero-bg img{animation:none}
+  .fab .ripple{display:none}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}

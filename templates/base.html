@@ -3,11 +3,19 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% block title %}Xamsa Média{% endblock %}</title>
   <script>(function(){try{var t=localStorage.getItem('xamsa-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
   <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
-  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=31">
+  <!-- Ressenti application mobile (PWA) -->
+  <meta name="theme-color" content="#2456B0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Xamsa Média">
+  <link rel="apple-touch-icon" href="{% static 'img/logo.png' %}">
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=32">
 </head>
 <body>
   <header>
@@ -121,6 +129,6 @@
   </footer>
 
   {% include 'partials/chatbot.html' %}
-  <script src="{% static 'js/xamsa.js' %}?v=31"></script>
+  <script src="{% static 'js/xamsa.js' %}?v=32"></script>
 </body>
 </html>
