@@ -86,11 +86,13 @@
 
   // ---- Mur de la presse : defilement auto (rAF) + fleches gauche/droite ----
   var marquee = document.querySelector('.marquee');
-  var wallPaused = false, wallResumeTimer;
-  function wallLoop() {
-    if (marquee && track && !wallPaused && !reduce) {
-      marquee.scrollLeft += 0.5;
-      var moitie = track.scrollWidth / 2;   // contenu duplique : on boucle a la moitie
+  var wallPaused = false, wallResumeTimer, wallLast = 0;
+  function wallLoop(ts) {
+    var dt = wallLast ? ts - wallLast : 0;
+    wallLast = ts;
+    if (marquee && track && !wallPaused && !reduce && dt > 0 && dt < 120) {
+      marquee.scrollLeft += 0.055 * dt;                 // ~55 px/s, vitesse constante
+      var moitie = track.scrollWidth / 2;               // contenu duplique : boucle a la moitie
       if (moitie > 0 && marquee.scrollLeft >= moitie) marquee.scrollLeft -= moitie;
     }
     requestAnimationFrame(wallLoop);
@@ -98,11 +100,15 @@
   function wallPause() { wallPaused = true; clearTimeout(wallResumeTimer); }
   function wallResume(delai) { clearTimeout(wallResumeTimer); wallResumeTimer = setTimeout(function () { wallPaused = false; }, delai || 0); }
   if (marquee && track) {
-    marquee.addEventListener('mouseenter', wallPause);
-    marquee.addEventListener('mouseleave', function () { wallResume(300); });
+    // Pause au survol UNIQUEMENT avec une vraie souris : sur ecran tactile,
+    // mouseenter se declenche au toucher mais mouseleave jamais -> resterait bloque.
+    if (window.matchMedia && window.matchMedia('(hover:hover)').matches) {
+      marquee.addEventListener('mouseenter', wallPause);
+      marquee.addEventListener('mouseleave', function () { wallResume(300); });
+    }
     marquee.addEventListener('touchstart', wallPause, { passive: true });
-    marquee.addEventListener('touchend', function () { wallResume(3000); });
-    marquee.addEventListener('wheel', function () { wallPause(); wallResume(2500); }, { passive: true });
+    marquee.addEventListener('touchend', function () { wallResume(2000); });
+    marquee.addEventListener('wheel', function () { wallPause(); wallResume(2000); }, { passive: true });
     requestAnimationFrame(wallLoop);
     var pas = function () { var c = marquee.querySelector('.une'); return c ? c.offsetWidth + 16 : 240; };
     // Defilement fluide fait main (scrollBy 'smooth' n'est pas fiable partout).

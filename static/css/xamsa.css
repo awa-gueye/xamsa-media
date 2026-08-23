@@ -820,3 +820,30 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 
 /* ===== Favori "lire plus tard" (etat actif) ===== */
 .fav-btn.on svg{fill:currentColor}
+
+/* ===== OVERRIDES MOBILE (places en fin de fichier pour gagner l'ordre CSS) ===== */
+/* La navbar sur 2 rangees est plus haute : on ajuste le decalage du hero. */
+@media(max-width:1000px){
+  :root{--head:124px}
+}
+@media(max-width:600px){
+  /* Hero "A la Une" : moins haut + titres plus petits (l'ordinateur ne change pas). */
+  .home-hero{min-height:auto;padding-bottom:2rem}
+  .hero-carousel{min-height:auto;margin-bottom:.8rem}
+  .home-hero h1,.hero-slide h1{font-size:clamp(1.45rem,6.2vw,2rem);line-height:1.14;max-width:100%}
+  .home-hero .lead-hero{font-size:1rem;margin:1rem auto 1.4rem}
+  .scroll-ind{display:none}
+  /* Titres de sections + pages : plus compacts. */
+  .page-hero h1{font-size:1.7rem}
+  .page-hero .dek{font-size:1rem}
+  .sec-head h2{font-size:1.45rem}
+  .lecture-hero h1{font-size:1.6rem}
+  .presswall .head .t{font-size:1.05rem}
+  /* Brief du jour : plus compact. */
+  .brief-card{padding:1.25rem 1.1rem;border-radius:18px}
+  .brief-head h2{font-size:1.3rem}
+  .brief-body{font-size:.96rem;line-height:1.65}
+  .brief-date{font-size:.7rem;padding:.28rem .6rem}
+  /* Cartes : titres un peu plus petits. */
+  .acard .body h3,.curbody h3,.tbody h3,.rubcard h3{font-size:1.12rem}
+}
