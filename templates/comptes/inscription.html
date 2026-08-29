@@ -1,4 +1,5 @@
 {% extends 'base_auth.html' %}
+{% load static %}
 {% block title %}Inscription &middot; Xamsa Média{% endblock %}
 {% block pitch_titre %}Rejoignez l'observatoire des médias{% endblock %}
 {% block content %}
@@ -40,7 +41,13 @@
     </div>
     <div class="field"><label>Email</label><input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="awa.gueye@email.com" required>{% if form.email.errors %}<div class="errmsg">{{ form.email.errors.0 }}</div>{% endif %}</div>
     <div class="grid2">
-      <div class="field"><label>Téléphone <span class="opt">(optionnel)</span></label><input type="text" name="telephone" value="{{ form.telephone.value|default:'' }}" placeholder="+221 77 000 00 00"></div>
+      <div class="field"><label>Téléphone <span class="opt">(optionnel)</span></label>
+        <div class="tel-group">
+          <select id="telPays" class="tel-pays" aria-label="Indicatif du pays"></select>
+          <input type="tel" id="telNumero" class="tel-num" inputmode="tel" placeholder="77 000 00 00" autocomplete="tel-national">
+        </div>
+        <input type="hidden" name="telephone" id="telephone" value="{{ form.telephone.value|default:'' }}">
+      </div>
       <div class="field"><label>Localisation <span class="opt">(optionnel)</span></label><input type="text" name="localisation" value="{{ form.localisation.value|default:'' }}" placeholder="Dakar, Sénégal"></div>
     </div>
     <div class="field"><label>Organisation <span class="opt">(optionnel)</span></label><input type="text" name="organisation" value="{{ form.organisation.value|default:'' }}" placeholder="Rédaction, association, université..."></div>
@@ -58,6 +65,7 @@
 <p class="auth-alt">Déjà inscrit ? <a href="{% url 'connexion' %}">Se connecter</a></p>
 {% endblock %}
 {% block script %}
+<script src="{% static 'js/pays.js' %}?v=35"></script>
 <script>
   (function(){
     var s1=document.getElementById('step1'), s2=document.getElementById('step2');

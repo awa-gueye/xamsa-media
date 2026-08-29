@@ -188,6 +188,9 @@ LOGOUT_REDIRECT_URL = 'home'
 # (sinon backend console : evite un plantage 500 quand le mot de passe manque).
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# Vrai si l'envoi reel est possible : conditionne la verification par code a
+# l'inscription (sans email configure, on ne bloque pas les inscriptions).
+EMAIL_ACTIF = bool(EMAIL_HOST and EMAIL_HOST_PASSWORD)
 if EMAIL_HOST and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))

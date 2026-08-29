@@ -1,0 +1,23 @@
+{% extends 'base_auth.html' %}
+{% block title %}Vérification &middot; Xamsa Média{% endblock %}
+{% block pitch_titre %}Confirmez votre email{% endblock %}
+{% block content %}
+<span class="eyebrow">Inscription</span>
+<h2>Vérification</h2>
+<p class="sub">Nous avons envoyé un code à 6 chiffres à <b>{{ email }}</b>. Saisissez-le ci-dessous pour finaliser votre inscription. (Pensez à vérifier vos courriers indésirables.)</p>
+{% if erreur %}<div class="errmsg errbox">{{ erreur }}</div>{% endif %}
+<form method="post" action="{% url 'verifier_email' %}" novalidate>
+  {% csrf_token %}
+  <div class="field"><label>Code de vérification</label>
+    <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"
+           maxlength="6" placeholder="123456" required autofocus
+           style="letter-spacing:.5em;font-size:1.4rem;text-align:center;font-weight:800">
+  </div>
+  <button type="submit" class="btn btn-green btn-block">Valider mon compte <svg class="icon" viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></button>
+</form>
+<form method="post" action="{% url 'verifier_email' %}" style="margin-top:.8rem">
+  {% csrf_token %}<input type="hidden" name="renvoyer" value="1">
+  <button type="submit" class="btn btn-ghost btn-block">Renvoyer le code</button>
+</form>
+<p class="auth-alt"><a href="{% url 'inscription' %}">&larr; Modifier mes informations</a></p>
+{% endblock %}

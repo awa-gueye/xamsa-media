@@ -882,3 +882,8 @@ a.lecture-author:hover .la-name{color:var(--pine)}
   .compte-card{padding:1.2rem}
   .brief-body{font-size:.95rem}
 }
+
+/* ===== Champ telephone avec indicatif + drapeau ===== */
+.tel-group{display:flex;gap:.5rem;align-items:stretch}
+.tel-pays{flex:0 0 44%;max-width:210px;background:#fff}
+.tel-num{flex:1;min-width:0}

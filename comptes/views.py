@@ -18,19 +18,113 @@ ROLES = [
 ]
 
 
+def _envoyer_code_email(email, prenom, code):
+    from django.conf import settings
+    from django.core.mail import send_mail
+    send_mail(
+        'Votre code de vérification Xamsa Média',
+        ('Bonjour {},\n\nVotre code de vérification est : {}\n\n'
+         'Saisissez-le sur Xamsa Média pour finaliser votre inscription. '
+         'Il est valable 20 minutes.\n\n'
+         "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.\n\n"
+         "L'équipe Xamsa Média").format(prenom, code),
+        settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False)
+
+
 def inscription(request):
+    from django.conf import settings
     if request.user.is_authenticated:
         return redirect('home')
     if request.method == 'POST':
         form = InscriptionForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Votre compte a été créé. Bienvenue sur Xamsa Média !')
-            return redirect('home')
+            d = form.cleaned_data
+            # Sans email configure : inscription directe (on ne bloque personne).
+            if not getattr(settings, 'EMAIL_ACTIF', False):
+                user = form.save()
+                login(request, user)
+                messages.success(request, 'Votre compte a été créé. Bienvenue sur Xamsa Média !')
+                return redirect('home')
+
+            # Avec email : on n'enregistre PAS encore ; on envoie un code a 6 chiffres.
+            import random
+            from datetime import timedelta
+
+            from django.contrib.auth.hashers import make_password
+            from django.core.files.storage import default_storage
+            from django.utils import timezone
+            photo_nom = ''
+            if d.get('photo'):
+                photo_nom = default_storage.save('profils/' + d['photo'].name, d['photo'])
+            code = '{:06d}'.format(random.randint(0, 999999))
+            request.session['inscription'] = {
+                'prenom': d['prenom'], 'nom': d['nom'], 'email': d['email'],
+                'type_profil': d['type_profil'], 'telephone': d.get('telephone', ''),
+                'localisation': d.get('localisation', ''), 'organisation': d.get('organisation', ''),
+                'photo': photo_nom, 'password': make_password(d['mot_de_passe']),
+                'code': code, 'expire': (timezone.now() + timedelta(minutes=20)).isoformat(),
+                'essais': 0,
+            }
+            try:
+                _envoyer_code_email(d['email'], d['prenom'], code)
+            except Exception:
+                messages.error(request, "L'envoi du code a échoué. Réessayez dans un moment.")
+                return render(request, 'comptes/inscription.html', {'form': form, 'roles': ROLES})
+            return redirect('verifier_email')
     else:
         form = InscriptionForm()
     return render(request, 'comptes/inscription.html', {'form': form, 'roles': ROLES})
+
+
+def verifier_email(request):
+    """Saisie du code a 6 chiffres recu par email pour finaliser l'inscription."""
+    from datetime import datetime, timedelta
+
+    from django.utils import timezone
+    pend = request.session.get('inscription')
+    if not pend:
+        return redirect('inscription')
+    erreur = None
+    if request.method == 'POST':
+        if request.POST.get('renvoyer'):
+            import random
+            code = '{:06d}'.format(random.randint(0, 999999))
+            pend['code'] = code
+            pend['expire'] = (timezone.now() + timedelta(minutes=20)).isoformat()
+            pend['essais'] = 0
+            request.session.modified = True
+            try:
+                _envoyer_code_email(pend['email'], pend['prenom'], code)
+                messages.success(request, 'Un nouveau code vous a été envoyé.')
+            except Exception:
+                messages.error(request, "L'envoi a échoué. Réessayez.")
+            return redirect('verifier_email')
+
+        saisie = (request.POST.get('code') or '').strip()
+        if timezone.now() > datetime.fromisoformat(pend['expire']):
+            erreur = 'Le code a expiré. Demandez-en un nouveau.'
+        elif saisie != pend['code']:
+            pend['essais'] = pend.get('essais', 0) + 1
+            request.session.modified = True
+            if pend['essais'] >= 5:
+                del request.session['inscription']
+                messages.error(request, 'Trop de tentatives. Reprenez votre inscription.')
+                return redirect('inscription')
+            erreur = 'Code incorrect. Réessayez.'
+        else:
+            user = User(username=pend['email'], email=pend['email'],
+                        first_name=pend['prenom'], last_name=pend['nom'])
+            user.password = pend['password']  # deja hache
+            user.save()
+            Profil.objects.create(
+                user=user, type_profil=pend['type_profil'], telephone=pend['telephone'],
+                localisation=pend['localisation'], organisation=pend['organisation'],
+                photo=pend['photo'] or None)
+            del request.session['inscription']
+            login(request, user)
+            messages.success(request, 'Votre compte est validé. Bienvenue sur Xamsa Média !')
+            return redirect('home')
+    return render(request, 'comptes/verifier_email.html', {'email': pend['email'], 'erreur': erreur})
 
 
 def connexion(request):
