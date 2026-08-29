@@ -133,6 +133,19 @@ def recherche(request):
                                                'autres': autres, 'reponse_ia': reponse_ia})
 
 
+def service_worker(request):
+    """Service worker servi a la racine (/sw.js) pour couvrir tout le site (PWA)."""
+    resp = render(request, 'sw.js', content_type='application/javascript')
+    resp['Cache-Control'] = 'no-cache'   # que le navigateur detecte vite les MAJ du SW
+    resp['Service-Worker-Allowed'] = '/'
+    return resp
+
+
+def hors_ligne(request):
+    """Page de secours affichee hors connexion (mise en cache par le service worker)."""
+    return render(request, 'offline.html')
+
+
 def latest_json(request):
     from django.http import JsonResponse
     items = []

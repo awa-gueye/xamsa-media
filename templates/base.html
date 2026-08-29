@@ -130,5 +130,12 @@
 
   {% include 'partials/chatbot.html' %}
   <script src="{% static 'js/xamsa.js' %}?v=34"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js').catch(function () {});
+      });
+    }
+  </script>
 </body>
 </html>

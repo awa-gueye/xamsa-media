@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Hors ligne &middot; Xamsa Média{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap" style="text-align:center;max-width:560px;margin:0 auto">
+  <span class="eyebrow">Connexion</span>
+  <h1>Vous êtes hors ligne</h1>
+  <p class="dek" style="margin:0 auto">Impossible de joindre Xamsa Média pour le moment. Vérifiez votre connexion internet, puis réessayez.</p>
+  <p style="margin-top:1.6rem"><a class="btn btn-green" href="{% url 'home' %}"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg> Réessayer</a></p>
+</div></section>
+{% endblock %}

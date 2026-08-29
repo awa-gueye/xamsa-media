@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('sw.js', views.service_worker, name='service_worker'),
+    path('hors-ligne/', views.hors_ligne, name='hors_ligne'),
     path('recherche/', views.recherche, name='recherche'),
     path('api/latest/', views.latest_json, name='latest_json'),
     path('rubriques/', views.rubriques, name='rubriques'),
