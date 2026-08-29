@@ -11,11 +11,11 @@
   <meta name="theme-color" content="#2456B0">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Xamsa Média">
   <link rel="apple-touch-icon" href="{% static 'img/logo.png' %}">
   <link rel="manifest" href="{% static 'manifest.json' %}">
-  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=34">
+  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=35">
 </head>
 <body>
   <header>
@@ -129,7 +129,7 @@
   </footer>
 
   {% include 'partials/chatbot.html' %}
-  <script src="{% static 'js/xamsa.js' %}?v=34"></script>
+  <script src="{% static 'js/xamsa.js' %}?v=35"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

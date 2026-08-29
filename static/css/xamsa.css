@@ -847,3 +847,38 @@ a.lecture-author:hover .la-name{color:var(--pine)}
   /* Cartes : titres un peu plus petits. */
   .acard .body h3,.curbody h3,.tbody h3,.rubcard h3{font-size:1.12rem}
 }
+
+/* ===== Chatbot mobile : plein ecran fiable (hauteur dynamique + zones sures) ===== */
+@media(max-width:600px){
+  .chat-panel{width:100vw;height:100dvh}
+  .chat-head{padding-top:calc(1.1rem + env(safe-area-inset-top))}
+  .chat-input{padding-bottom:calc(.9rem + env(safe-area-inset-bottom))}
+  .chat-body{padding:1rem}
+  .msg{font-size:.95rem;max-width:90%}
+  .chat-name{font-size:1.05rem}
+  .fab{bottom:calc(1rem + env(safe-area-inset-bottom))}
+}
+
+/* ===== Reductions de texte mobile supplementaires (pages internes) ===== */
+@media(max-width:600px){
+  h1{font-size:1.7rem;line-height:1.18}
+  h2{font-size:1.4rem}
+  h3{font-size:1.15rem}
+  .dek,.lead,.sub{font-size:1rem}
+  .eyebrow{font-size:.72rem}
+  /* Articles / publications */
+  article.lecture{width:92vw;margin:2rem auto}
+  article.lecture .corps,.article-content{font-size:1rem;line-height:1.7}
+  article.lecture .chapo{font-size:1.05rem}
+  .lecture-hero{min-height:auto}
+  .lecture-hero-inner{padding:1.6rem 0 2rem}
+  /* Formulaires (inscription, publier, profil) */
+  .field label{font-size:.8rem}
+  .field input,.field select,.field textarea,.pub-form .inp,.comm-field textarea{font-size:16px;padding:.7rem .85rem}
+  .auth-left{display:none}
+  /* Boutons plus compacts */
+  .btn{padding:.7rem 1.1rem;font-size:.92rem}
+  /* Compte / listes */
+  .compte-card{padding:1.2rem}
+  .brief-body{font-size:.95rem}
+}
