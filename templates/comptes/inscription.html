@@ -36,21 +36,21 @@
   <div class="step" id="step2" hidden>
     <p class="sub">Renseignez vos informations pour finaliser votre inscription.</p>
     <div class="grid2">
-      <div class="field"><label>Prénom</label><input type="text" name="prenom" value="{{ form.prenom.value|default:'' }}" placeholder="Awa" required>{% if form.prenom.errors %}<div class="errmsg">{{ form.prenom.errors.0 }}</div>{% endif %}</div>
-      <div class="field"><label>Nom</label><input type="text" name="nom" value="{{ form.nom.value|default:'' }}" placeholder="Gueye" required>{% if form.nom.errors %}<div class="errmsg">{{ form.nom.errors.0 }}</div>{% endif %}</div>
+      <div class="field"><label>Prénom</label><input type="text" name="prenom" value="{{ form.prenom.value|default:'' }}" placeholder="Prénom" required>{% if form.prenom.errors %}<div class="errmsg">{{ form.prenom.errors.0 }}</div>{% endif %}</div>
+      <div class="field"><label>Nom</label><input type="text" name="nom" value="{{ form.nom.value|default:'' }}" placeholder="Nom" required>{% if form.nom.errors %}<div class="errmsg">{{ form.nom.errors.0 }}</div>{% endif %}</div>
     </div>
-    <div class="field"><label>Email</label><input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="awa.gueye@email.com" required>{% if form.email.errors %}<div class="errmsg">{{ form.email.errors.0 }}</div>{% endif %}</div>
-    <div class="grid2">
-      <div class="field"><label>Téléphone <span class="opt">(optionnel)</span></label>
-        <div class="tel-group">
-          <select id="telPays" class="tel-pays" aria-label="Indicatif du pays"></select>
-          <input type="tel" id="telNumero" class="tel-num" inputmode="tel" placeholder="77 000 00 00" autocomplete="tel-national">
-        </div>
-        <input type="hidden" name="telephone" id="telephone" value="{{ form.telephone.value|default:'' }}">
+    <div class="field"><label>Email</label><input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="email@gmail.com" required>{% if form.email.errors %}<div class="errmsg">{{ form.email.errors.0 }}</div>{% endif %}</div>
+    <div class="field"><label>Téléphone <span class="opt">(optionnel)</span></label>
+      <div class="tel-group">
+        <select id="telPays" class="tel-pays" aria-label="Indicatif du pays"></select>
+        <input type="tel" id="telNumero" class="tel-num" inputmode="tel" placeholder="77 000 00 00" autocomplete="tel-national">
       </div>
-      <div class="field"><label>Localisation <span class="opt">(optionnel)</span></label><input type="text" name="localisation" value="{{ form.localisation.value|default:'' }}" placeholder="Dakar, Sénégal"></div>
+      <input type="hidden" name="telephone" id="telephone" value="{{ form.telephone.value|default:'' }}">
     </div>
-    <div class="field"><label>Organisation <span class="opt">(optionnel)</span></label><input type="text" name="organisation" value="{{ form.organisation.value|default:'' }}" placeholder="Rédaction, association, université..."></div>
+    <div class="grid2">
+      <div class="field"><label>Localisation <span class="opt">(optionnel)</span></label><input type="text" name="localisation" value="{{ form.localisation.value|default:'' }}" placeholder="Ville, Pays"></div>
+      <div class="field"><label>Organisation <span class="opt">(optionnel)</span></label><input type="text" name="organisation" value="{{ form.organisation.value|default:'' }}" placeholder="Rédaction, association..."></div>
+    </div>
     <div class="field"><label>Photo de profil <span class="opt">(optionnel)</span></label><input type="file" name="photo" accept="image/*"></div>
     <div class="grid2">
       <div class="field"><label>Mot de passe</label><input type="password" name="mot_de_passe" placeholder="••••••••" required>{% if form.mot_de_passe.errors %}<div class="errmsg">{{ form.mot_de_passe.errors.0 }}</div>{% endif %}</div>
@@ -65,7 +65,7 @@
 <p class="auth-alt">Déjà inscrit ? <a href="{% url 'connexion' %}">Se connecter</a></p>
 {% endblock %}
 {% block script %}
-<script src="{% static 'js/pays.js' %}?v=35"></script>
+<script src="{% static 'js/pays.js' %}?v=37"></script>
 <script>
   (function(){
     var s1=document.getElementById('step1'), s2=document.getElementById('step2');

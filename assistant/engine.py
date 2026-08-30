@@ -59,10 +59,30 @@ def _sources_depuis(documents, indices=None, limite=5):
             continue
         vues.add(url)
         sources.append({'titre': d.get('titre', ''), 'origine': d.get('origine', ''),
-                        'url': url})
+                        'url': url, 'date': d.get('date', ''), 'type': d.get('type', '')})
         if len(sources) >= limite:
             break
     return sources
+
+
+def _niveau_confiance(sources):
+    """Estime un niveau de confiance a partir des sources reellement citees.
+
+    - Élevé  : plusieurs sources concordantes, ou une source du site + une autre.
+    - Moyen  : au moins une source identifiee.
+    - Faible : aucune source (reponse de culture generale, a verifier).
+    """
+    n = len(sources)
+    a_site = any(s.get('type') in ('article', 'revue')
+                 or s.get('origine') == 'Xamsa Media' for s in sources)
+    if n >= 3 or (n >= 2 and a_site):
+        return {'niveau': 'Élevé',
+                'note': "Plusieurs sources concordantes appuient cette réponse."}
+    if n >= 1:
+        return {'niveau': 'Moyen',
+                'note': "Réponse appuyée sur une source ; recoupez si besoin."}
+    return {'niveau': 'Faible',
+            'note': "Réponse générale, sans source directe : vérifiez l'information."}
 
 
 def _repli(question, documents):
@@ -109,33 +129,42 @@ def _rassembler_contexte(question, avec_web=True):
     return documents
 
 
-def repondre(question, historique=None, max_sources=5, avec_web=True, avec_sources=True):
-    """Point d'entree unique. Retourne {'texte': str, 'sources': [...]}.
+def repondre(question, historique=None, max_sources=5, avec_web=True,
+             avec_sources=True, mode=None):
+    """Point d'entree unique. Retourne {'texte', 'sources', 'confiance'}.
 
-    - Mode chatbot : avec_web=False, avec_sources=False (texte clair, aucun lien).
-    - Mode recherche : avec_web=True, avec_sources=True (facon moteur de reponse).
+    - Mode chatbot Looy laaj : avec_sources=True, chaque reponse cite ses sources
+      (titre, date, lien) et un niveau de confiance.
+    - `mode` (rechercher/retrouver/comparer/expliquer) adapte les consignes.
     """
     question = (question or '').strip()
     if not question:
-        return {'texte': "Posez-moi une question.", 'sources': []}
+        return {'texte': "Posez-moi une question.", 'sources': [], 'confiance': None}
+
+    # Pour une salutation / du bavardage : on repond sans recherche ni sources.
+    social = est_social(question)
 
     # 1. Contexte seulement pour les vraies questions (pas pour les salutations).
     documents = []
-    if not est_social(question):
+    if not social:
         documents = _rassembler_contexte(question, avec_web=avec_web)
 
     # 2. Redaction par le LLM.
     try:
         texte, indices = generer_reponse(question, documents, historique=historique,
-                                         avec_sources=avec_sources)
-        sources = _sources_depuis(documents, indices=indices, limite=max_sources) if avec_sources else []
-        return {'texte': texte, 'sources': sources}
+                                         avec_sources=avec_sources, mode=mode)
+        sources = []
+        confiance = None
+        if avec_sources and not social:
+            sources = _sources_depuis(documents, indices=indices, limite=max_sources)
+            confiance = _niveau_confiance(sources)
+        return {'texte': texte, 'sources': sources, 'confiance': confiance}
     except LLMIndisponible as exc:
         logger.info("Repli (LLM indisponible) : %s", exc)
-        if not avec_sources:  # mode chatbot : texte clair, jamais de liens.
-            if est_social(question):
-                return {'texte': ("Bonjour, je suis Looy laaj, l'assistant de Xamsa "
-                                  "Media. Comment puis-je vous aider ?"), 'sources': []}
-            return {'texte': ("Je ne parviens pas a repondre a l'instant. Veuillez "
-                              "reessayer dans un moment."), 'sources': []}
-        return _repli(question, documents)
+        if social:
+            return {'texte': ("Bonjour, je suis Looy laaj, l'assistant de Xamsa "
+                              "Media. Comment puis-je vous aider ?"),
+                    'sources': [], 'confiance': None}
+        repli = _repli(question, documents)
+        repli.setdefault('confiance', _niveau_confiance(repli.get('sources', [])))
+        return repli

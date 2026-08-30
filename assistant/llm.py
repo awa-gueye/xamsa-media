@@ -59,6 +59,26 @@ PROMPT_SYSTEME = (
     "utilise des virgules ou des points. Pas de mise en forme markdown (ni **, ni #)."
 )
 
+# Consignes specifiques aux 4 intentions de Looy laaj (chatbot / recherche).
+_MODES = {
+    'rechercher': (
+        "\n\nMODE RECHERCHER : l'utilisateur cherche un fait precis (une declaration, "
+        "un chiffre, une date). Donne la reponse factuelle directement, en precisant "
+        "quand c'est possible qui a dit/fait quoi et a quelle date."),
+    'retrouver': (
+        "\n\nMODE RETROUVER : l'utilisateur veut retrouver des contenus sur un sujet. "
+        "Presente une courte liste des elements pertinents (de quoi il s'agit, et la "
+        "periode), du plus recent au plus ancien."),
+    'comparer': (
+        "\n\nMODE COMPARER : l'utilisateur veut comparer la facon dont plusieurs medias "
+        "ou sources traitent un sujet. Organise la reponse source par source et fais "
+        "ressortir les points communs et les divergences."),
+    'expliquer': (
+        "\n\nMODE EXPLIQUER : l'utilisateur veut comprendre un sujet complexe. Explique "
+        "simplement, avec des mots accessibles (comme a un adolescent de 15 ans), sans "
+        "jargon, en commencant par une phrase de synthese."),
+}
+
 # Instruction ajoutee seulement quand on veut afficher des sources (page recherche).
 _INSTRUCTION_SOURCES = (
     "\n\nCITATION DES SOURCES :\n"
@@ -173,17 +193,19 @@ def _groq_texte(prompt_systeme, message, max_tokens):
     return texte
 
 
-def _prompt_systeme(avec_sources):
-    return PROMPT_SYSTEME + (_INSTRUCTION_SOURCES if avec_sources else '')
+def _prompt_systeme(avec_sources, mode=None):
+    prompt = PROMPT_SYSTEME + _MODES.get(mode or '', '')
+    return prompt + (_INSTRUCTION_SOURCES if avec_sources else '')
 
 
-def generer_reponse(question, documents, historique=None, avec_sources=True):
+def generer_reponse(question, documents, historique=None, avec_sources=True, mode=None):
     """Retourne (texte, indices_sources). Leve LLMIndisponible en cas d'echec.
 
     Si avec_sources est faux, aucune source n'est renvoyee et les eventuels
     marqueurs [[SOURCES]] sont retires du texte (mode chatbot : texte seul).
+    `mode` (rechercher/retrouver/comparer/expliquer) adapte les consignes.
     """
-    prompt = _prompt_systeme(avec_sources)
+    prompt = _prompt_systeme(avec_sources, mode)
     provider = getattr(settings, 'LLM_PROVIDER', 'gemini')
     if provider == 'gemini':
         texte = _gemini(question, documents, historique, prompt)

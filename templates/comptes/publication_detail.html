@@ -31,6 +31,7 @@
   {% endif %}
 
   {% if pub.resume %}<p class="chapo">{{ pub.resume }}</p>{% endif %}
+  {% if pub.video_embed %}<div class="video-embed"><iframe src="{{ pub.video_embed }}" title="{{ pub.titre }}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>{% endif %}
   <div class="corps article-content">{{ pub.corps_html }}</div>
 
   {% if pub.fichier %}

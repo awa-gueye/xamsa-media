@@ -8,7 +8,7 @@
 <form method="post" action="{% url 'connexion' %}" novalidate>
   {% csrf_token %}
   {% if erreur %}<div class="errmsg errbox">{{ erreur }}</div>{% endif %}
-  <div class="field"><label>Email</label><input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="awa.gueye@email.com" required></div>
+  <div class="field"><label>Email</label><input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="email@gmail.com" required></div>
   <div class="field"><label>Mot de passe</label><input type="password" name="mot_de_passe" placeholder="••••••••" required></div>
   <p class="auth-forgot"><a href="{% url 'password_reset' %}">Mot de passe oublié&nbsp;?</a></p>
   <button class="btn btn-green btn-block" type="submit">Se connecter <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>

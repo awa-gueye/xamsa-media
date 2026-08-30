@@ -45,6 +45,22 @@ class Contribution(models.Model):
     ]
     STATUTS = [('attente', 'En attente de validation'), ('publie', 'Publié'), ('refuse', 'Refusé')]
 
+    # Destination : ou la contribution doit apparaitre une fois validee par l'admin.
+    DESTINATIONS = [
+        ('', 'Espace contribution (par défaut)'),
+        ('enquete', 'Enquêtes'),
+        ('reportage', 'Reportages'),
+        ('dossier', 'Dossiers'),
+        ('politique', 'Actualité · Politique'),
+        ('cours', 'Académie · Cours'),
+        ('formation', 'Académie · Formation'),
+        ('concours', 'Communauté · Concours'),
+        ('opportunite', 'Communauté · Opportunité'),
+        ('association', 'Communauté · Association de presse'),
+        ('histoire', 'Médias du Sénégal · Histoire des médias'),
+        ('portrait', 'Médias du Sénégal · Portrait de journaliste'),
+    ]
+
     # Ce que chaque profil a le droit de publier.
     TYPES_PAR_PROFIL = {
         'lecteur': ['sujet'],
@@ -57,9 +73,13 @@ class Contribution(models.Model):
     type = models.CharField(max_length=20, choices=TYPES, default='sujet')
     titre = models.CharField(max_length=240)
     categorie = models.CharField(max_length=60, blank=True)
+    destination = models.CharField('Destination (rubrique)', max_length=20,
+                                   choices=DESTINATIONS, blank=True, default='')
     resume = models.TextField('Résumé', blank=True)
     corps = models.TextField('Contenu', blank=True)
     image = models.ImageField('Image de la publication', upload_to='contributions/images/', blank=True, null=True)
+    video_url = models.URLField('Vidéo YouTube (URL)', max_length=600, blank=True,
+                                help_text="Lien YouTube : la vidéo sera affichée dans la publication.")
     fichier = models.FileField('Fichier (audio, vidéo, document)', upload_to='contributions/fichiers/', blank=True, null=True)
     statut = models.CharField(max_length=12, choices=STATUTS, default='attente')
     vues = models.PositiveIntegerField('Nombre de vues', default=0)
@@ -92,6 +112,12 @@ class Contribution(models.Model):
         if '<' in corps and '>' in corps:
             return mark_safe(nettoyer_html(corps))
         return mark_safe(linebreaks(escape(corps)))
+
+    @property
+    def video_embed(self):
+        """URL d'integration YouTube (iframe) si une video est renseignee."""
+        from core.media_embed import youtube_embed
+        return youtube_embed(self.video_url)
 
     @property
     def temps_lecture(self):

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Xamsa Média, À la Une{% endblock %}
+{% block title %}Xamsa Média, Accueil{% endblock %}
 {% block nav_home %}active{% endblock %}
 {% block content %}
 
@@ -34,8 +34,23 @@
   <a class="scroll-ind" href="#revue" aria-label="Descendre"><svg class="icon" viewBox="0 0 24 24" style="font-size:1.6rem"><rect x="8" y="3" width="8" height="14" rx="4"/><path d="M12 7v3"/><path d="M9 20l3 2 3-2"/></svg></a>
 </section>
 
+{% if une_article %}
+<section class="block" style="padding-bottom:0"><div class="wrap">
+  <div class="sec-head reveal"><div><span class="eyebrow">À la une</span><h2>Le dossier principal</h2></div></div>
+  <a class="feature-une reveal" href="{{ une_article.get_absolute_url }}">
+    <div class="fu-media">{% if une_article.visuel %}<img src="{{ une_article.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div></div>
+    <div class="fu-body">
+      <span class="badge ochre">{{ une_article.categorie|default:une_article.get_type_display }}</span>
+      <h3>{{ une_article.titre }}</h3>
+      {% if une_article.chapo %}<p>{{ une_article.chapo|truncatewords:40 }}</p>{% endif %}
+      <span class="meta">Lire le dossier &middot; {{ une_article.temps_lecture }} min <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>
+  </a>
+</div></section>
+{% endif %}
+
 <section class="presswall">
-  <div class="head"><span class="t">Le Mur de la presse</span><span class="live">En continu &middot; dernières unes</span></div>
+  <div class="head"><span class="t">Dernières actualités</span><span class="live">En continu &middot; le mur de la presse</span></div>
   <div class="marquee-wrap">
     <button class="wall-arrow prev" id="wallPrev" type="button" aria-label="Voir les précédentes"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="marquee"><div class="track" id="track">
@@ -50,16 +65,47 @@
   </div>
 </section>
 
-{% if brief %}
-<section class="block" style="padding-bottom:0"><div class="wrap">
-  <div class="brief-card reveal">
-    <div class="brief-head">
-      <span class="brief-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg></span>
-      <div><span class="eyebrow">Généré par Looy laaj</span><h2>Le brief du jour</h2></div>
-      <span class="brief-date">{{ brief.date|date:"l d F Y"|capfirst }}</span>
+{% if enquetes %}
+<section class="block dark">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="eyebrow">Le fil d'enquêtes</span><h2>Les enquêtes de Xamsa</h2></div>
+      <a class="more" href="{% url 'dossiers' %}">Toutes les enquêtes <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
-    <div class="brief-body">{{ brief.contenu|linebreaksbr }}</div>
-    <p class="brief-foot">Synthèse automatique de la revue de presse. Vérifiez toujours l'information à la source.</p>
+    <div class="spotlight">
+      {% for a in enquetes %}{% if forloop.first %}
+      <a class="spot-main reveal" href="{{ a.get_absolute_url }}">
+        {% if a.visuel %}<img src="{{ a.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div>
+        <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
+        <h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:26 }}</p>{% endif %}
+      </a>
+      <div class="spot-side">
+        {% endif %}{% endfor %}
+        {% for a in enquetes %}{% if not forloop.first and forloop.counter <= 3 %}
+        <a class="tile {% if forloop.counter == 2 %}green{% else %}clay{% endif %}" href="{{ a.get_absolute_url }}">
+          <span class="ic"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          <h3>{{ a.titre|truncatewords:8 }}</h3><p>{{ a.get_type_display }} &middot; {{ a.temps_lecture }} min</p>
+        </a>
+        {% endif %}{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if reportages %}
+<section class="block"><div class="wrap">
+  <div class="sec-head reveal"><div><span class="eyebrow">Sur le terrain</span><h2>Les reportages</h2>
+    <p class="lead">Récits et immersions produits par Xamsa Média.</p></div>
+    <a class="more" href="{% url 'dossiers' %}">Voir tout <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+  <div class="cardgrid">
+    {% for a in reportages %}
+    <a class="acard reveal" href="{{ a.get_absolute_url }}">
+      <div class="thumb">{% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<span class="badge pine">Reportage</span></div>
+      <div class="body"><h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:18 }}</p>{% endif %}
+        <span class="meta">{{ a.temps_lecture }} min de lecture</span></div>
+    </a>
+    {% endfor %}
   </div>
 </div></section>
 {% endif %}
@@ -97,33 +143,42 @@
   </div>
 </section>
 
-{% if enquetes %}
-<section class="block dark">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div><span class="eyebrow">Le fil d'enquêtes</span><h2>Nos productions au long cours</h2></div>
-      <a class="more" href="{% url 'dossiers' %}">Toutes les enquêtes <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+{% if brief %}
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="brief-card reveal">
+    <div class="brief-head">
+      <span class="brief-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg></span>
+      <div><span class="eyebrow">Généré par Looy laaj</span><h2>Le brief du jour</h2></div>
+      <span class="brief-date">{{ brief.date|date:"l d F Y"|capfirst }}</span>
     </div>
-    <div class="spotlight">
-      {% for a in enquetes %}{% if forloop.first %}
-      <a class="spot-main reveal" href="{{ a.get_absolute_url }}">
-        {% if a.visuel %}<img src="{{ a.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div>
-        <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
-        <h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:26 }}</p>{% endif %}
-      </a>
-      <div class="spot-side">
-        {% endif %}{% endfor %}
-        {% for a in enquetes %}{% if not forloop.first and forloop.counter <= 3 %}
-        <a class="tile {% if forloop.counter == 2 %}green{% else %}clay{% endif %}" href="{{ a.get_absolute_url }}">
-          <span class="ic"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-          <h3>{{ a.titre|truncatewords:8 }}</h3><p>{{ a.get_type_display }} &middot; {{ a.temps_lecture }} min</p>
-        </a>
-        {% endif %}{% endfor %}
-      </div>
-    </div>
+    <div class="brief-body">{{ brief.contenu|linebreaksbr }}</div>
+    <p class="brief-foot">Synthèse automatique de la revue de presse. Vérifiez toujours l'information à la source.</p>
   </div>
-</section>
+</div></section>
 {% endif %}
+
+<section class="block dark" id="looylaaj"><div class="wrap">
+  <div class="sec-head reveal"><div><span class="eyebrow">Looy laaj ?</span><h2>Posez votre question</h2>
+    <p class="lead">Rechercher, retrouver, comparer, expliquer — chaque réponse cite ses sources, leurs dates, les liens et un niveau de confiance.</p></div></div>
+  <div class="looy-modes reveal">
+    <button type="button" class="looy-mode" data-q="Qu'a déclaré le président sur le pétrole depuis 2024 ?">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <b>Rechercher</b><small>Une déclaration, un chiffre, un fait</small></button>
+    <button type="button" class="looy-mode" data-q="Trouve-moi les articles parlant de l'érosion à Saint-Louis depuis 2015.">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h6"/></svg>
+      <b>Retrouver</b><small>Des articles sur un sujet</small></button>
+    <button type="button" class="looy-mode" data-q="Compare la couverture de cette affaire par 5 médias.">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+      <b>Comparer</b><small>Plusieurs médias entre eux</small></button>
+    <button type="button" class="looy-mode" data-q="Explique-moi le nouveau budget du Sénégal comme si j'avais 15 ans.">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h6M9 13h4"/></svg>
+      <b>Expliquer</b><small>Un sujet complexe, simplement</small></button>
+  </div>
+  <form class="hero-search looy-search reveal" action="{% url 'recherche' %}" method="get">
+    <input type="search" name="q" id="looyInput" placeholder="Ex. Qu'a déclaré le président sur le pétrole depuis 2024 ?" autocomplete="off">
+    <button type="submit" aria-label="Interroger Looy laaj"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </form>
+</div></section>
 
 {% if publications %}
 <section class="block"><div class="wrap">
@@ -148,8 +203,8 @@
       <p class="lead">Chaque espace a sa propre matière.</p></div></div>
     <div class="cardgrid">
       <a class="acard reveal" href="{% url 'rubriques' %}">
-        <div class="thumb sec-thumb sec-actu"><img src="{% static 'img/sections/actualites.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Actualités</span></div>
-        <div class="body"><h3>Actualités &amp; rubriques</h3><p>Les pôles éditoriaux et la rubrique spéciale Médias du Sénégal.</p><span class="meta">Explorer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+        <div class="thumb sec-thumb sec-actu"><img src="{% static 'img/sections/actualites.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Actualité</span></div>
+        <div class="body"><h3>Actualité &amp; rubriques</h3><p>Les pôles éditoriaux et la rubrique spéciale Médias du Sénégal.</p><span class="meta">Explorer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
       </a>
       <a class="acard reveal" href="{% url 'academie' %}">
         <div class="thumb sec-thumb sec-aca"><img src="{% static 'img/sections/academie.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge clay">Académie</span></div>
@@ -162,4 +217,15 @@
     </div>
   </div>
 </section>
+
+<script>
+  (function(){
+    var input=document.getElementById('looyInput');
+    document.querySelectorAll('.looy-mode').forEach(function(b){
+      b.addEventListener('click',function(){
+        if(input){ input.value=b.getAttribute('data-q'); input.focus(); }
+      });
+    });
+  })();
+</script>
 {% endblock %}

@@ -45,6 +45,8 @@ class Article(models.Model):
     corps = models.TextField('Corps de l\'article', blank=True)
     image = models.ImageField('Image (fichier)', upload_to='articles/', blank=True, null=True)
     image_url = models.URLField('Image (URL externe)', max_length=600, blank=True)
+    video_url = models.URLField('Vidéo YouTube (URL)', max_length=600, blank=True,
+                                help_text="Lien YouTube : la vidéo sera affichée dans l'article.")
     temps_lecture = models.PositiveIntegerField('Temps de lecture (min)', default=6)
     a_la_une = models.BooleanField('A la une', default=False)
     publie = models.BooleanField('Publie', default=True)
@@ -64,6 +66,12 @@ class Article(models.Model):
         if self.image:
             return self.image.url
         return self.image_url
+
+    @property
+    def video_embed(self):
+        """URL d'integration YouTube (iframe) si une video est renseignee."""
+        from core.media_embed import youtube_embed
+        return youtube_embed(self.video_url)
 
     def get_absolute_url(self):
         return reverse('article_detail', args=[self.slug])

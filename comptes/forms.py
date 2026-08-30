@@ -94,12 +94,19 @@ class ProfilForm(forms.ModelForm):
 class ContributionForm(forms.ModelForm):
     class Meta:
         model = Contribution
-        fields = ['type', 'titre', 'categorie', 'resume', 'corps', 'image', 'fichier']
+        fields = ['type', 'destination', 'titre', 'categorie', 'resume', 'corps',
+                  'image', 'video_url', 'fichier']
         widgets = {
             'titre': forms.TextInput(attrs={'placeholder': 'Un titre clair et accrocheur'}),
             'categorie': forms.TextInput(attrs={'placeholder': 'Ex. Politique, Medias, Societe'}),
             'resume': forms.Textarea(attrs={'rows': 2, 'placeholder': "Une ou deux phrases qui resument l'essentiel."}),
             'corps': forms.Textarea(attrs={'rows': 12}),
+            'video_url': forms.URLInput(attrs={'placeholder': 'https://www.youtube.com/watch?v=...'}),
+        }
+        labels = {'destination': 'Où publier cette contribution ?'}
+        help_texts = {
+            'destination': "La rédaction validera avant publication dans la rubrique choisie.",
+            'video_url': "Optionnel : lien YouTube. La vidéo sera affichée dans la publication.",
         }
 
     def __init__(self, types_autorises=None, *args, **kwargs):

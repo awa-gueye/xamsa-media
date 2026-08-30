@@ -66,6 +66,7 @@ def documents_du_site(question, max_resultats=None):
             'origine': 'Xamsa Media',
             'url': a.get_absolute_url(),
             'type': 'article',
+            'date': a.date_publication.strftime('%d/%m/%Y') if a.date_publication else '',
         })
     for it in items:
         documents.append({
@@ -74,5 +75,6 @@ def documents_du_site(question, max_resultats=None):
             'origine': it.source.nom,
             'url': it.url,
             'type': 'revue',
+            'date': it.date.strftime('%d/%m/%Y') if it.date else '',
         })
     return documents

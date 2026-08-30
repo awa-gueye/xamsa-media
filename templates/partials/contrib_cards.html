@@ -1,0 +1,18 @@
+{% comment %}Grille de contributions de la communauté publiées dans une rubrique.
+Attend : contributions (liste), contrib_titre (optionnel).{% endcomment %}
+{% if contributions %}
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="sec-head reveal"><div><span class="eyebrow">Contributions de la communauté</span>
+    <h2>{{ contrib_titre|default:"Publications de la communauté" }}</h2>
+    <p class="lead">Des contenus proposés par la communauté et validés par la rédaction.</p></div></div>
+  <div class="cardgrid">
+    {% for c in contributions %}
+    <a class="acard reveal" href="{% url 'publication_detail' c.pk %}">
+      <div class="thumb">{% if c.image %}<img src="{{ c.image.url }}" alt="" loading="lazy">{% endif %}<span class="badge clay">{% if c.video_embed %}Vidéo{% else %}{{ c.get_type_display }}{% endif %}</span></div>
+      <div class="body"><h3>{{ c.titre }}</h3>{% if c.resume %}<p>{{ c.resume|truncatewords:20 }}</p>{% endif %}
+        <span class="meta">Par {{ c.auteur.first_name|default:c.auteur.username }} &middot; {{ c.date|date:"d/m/Y" }}</span></div>
+    </a>
+    {% endfor %}
+  </div>
+</div></section>
+{% endif %}

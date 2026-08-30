@@ -30,10 +30,15 @@ MEDIA_TABS = [('histoire', 'Histoire des médias'), ('portrait', 'Portraits de j
 def home(request):
     from veille.models import Brief
     latest = list(RevueItem.objects.select_related('source').order_by('-date')[:5])
+    # « À la une » : l'article/dossier mis en avant par l'admin (case « À la une »).
+    une_article = (Article.objects.filter(publie=True, a_la_une=True)
+                   .order_by('-date_publication').first())
     return render(request, 'home.html', {
         'latest': latest, 'une': latest[0] if latest else None,
+        'une_article': une_article,
         'revue': RevueItem.objects.select_related('source').order_by('-date')[:3],
         'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
+        'reportages': Article.objects.filter(publie=True, type='reportage')[:3],
         'mur': RevueItem.objects.select_related('source').order_by('-date')[:14],
         'publications': Contribution.objects.filter(statut='publie').select_related('auteur')[:6],
         'brief': Brief.objects.first(),
@@ -61,8 +66,11 @@ def medias_senegal(request, type_slug=None):
     tabs = [{'slug': None, 'label': 'Tout', 'url': reverse('medias_senegal')}]
     for slug, lbl in MEDIA_TABS:
         tabs.append({'slug': slug, 'label': lbl, 'url': reverse('medias_senegal_type', args=[slug])})
+    media_dests = ['histoire', 'portrait']
+    contribs = _contribs_pour([type_slug] if type_slug in media_dests else media_dests)
     return render(request, 'medias_senegal.html', {
         'items': qs, 'tabs': tabs, 'current': type_slug,
+        'contributions': contribs, 'contrib_titre': 'Contributions sur les médias du Sénégal',
         'label': dict(MEDIA_TABS).get(type_slug) if type_slug else None})
 
 
@@ -70,7 +78,9 @@ def medias_senegal(request, type_slug=None):
 def dossiers(request):
     return render(request, 'dossiers.html', {
         'nos_dossiers': Article.objects.filter(publie=True, type__in=['dossier', 'enquete'])[:6],
-        'curation': RevueItem.objects.select_related('source').order_by('-date')[:8]})
+        'curation': RevueItem.objects.select_related('source').order_by('-date')[:8],
+        'contributions': _contribs_pour(['enquete', 'reportage', 'dossier', 'politique']),
+        'contrib_titre': 'Enquêtes et dossiers de la communauté'})
 
 
 def audio_video(request):
@@ -94,15 +104,29 @@ def _espace(request, template, model, types, type_slug, titre, intro, urlbase, e
     return render(request, template, ctx)
 
 
+def _contribs_pour(destinations, limite=12):
+    """Contributions publiees dont la destination (choisie par l'auteur, validee
+    par l'admin) tombe dans l'une des rubriques demandees."""
+    return (Contribution.objects.filter(statut='publie', destination__in=destinations)
+            .select_related('auteur')[:limite])
+
+
 def academie(request, type_slug=None):
+    dests = ['cours', 'formation']
+    contribs = _contribs_pour([type_slug] if type_slug in dests else dests)
     return _espace(request, 'academie.html', Ressource, Ressource.TYPES, type_slug, "Académie",
-                   "Se former au journalisme et à l'analyse des médias.", 'academie')
+                   "Se former au journalisme et à l'analyse des médias.", 'academie',
+                   extra={'contributions': contribs,
+                          'contrib_titre': 'Ressources proposées par la communauté'})
 
 
 def communaute(request, type_slug=None):
-    contributions = []
-    if type_slug in (None, 'contribution'):
-        contributions = Contribution.objects.filter(statut='publie').select_related('auteur')[:12]
+    # Onglets « concours / opportunité / association » : contributions destinées à
+    # ces rubriques ; sinon (onglet contribution ou vue globale) : contributions par défaut.
+    if type_slug in ('concours', 'opportunite', 'association'):
+        contributions = _contribs_pour([type_slug])
+    else:
+        contributions = _contribs_pour([''])
     return _espace(request, 'communaute.html', ItemCommunaute, ItemCommunaute.TYPES, type_slug,
                    "Communauté", "Contribuez, participez et saisissez les opportunités.", 'communaute',
                    extra={'contributions': contributions})

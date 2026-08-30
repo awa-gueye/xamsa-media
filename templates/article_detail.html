@@ -13,6 +13,7 @@
 </section>
 <article class="lecture">
   {% if article.chapo %}<p class="chapo">{{ article.chapo }}</p>{% endif %}
+  {% if article.video_embed %}<div class="video-embed"><iframe src="{{ article.video_embed }}" title="{{ article.titre }}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>{% endif %}
   <div class="corps">{{ article.corps|linebreaks }}</div>
   <div class="reactions">
     <div class="share">

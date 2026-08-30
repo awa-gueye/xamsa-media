@@ -19,6 +19,11 @@
       <div class="field"><label>Type de contenu</label>{{ form.type }}</div>
       <div class="field"><label>Catégorie <span class="opt">(optionnel)</span></label>{{ form.categorie }}</div>
     </div>
+    <div class="field">
+      <label>Où publier cette contribution ?</label>{{ form.destination }}
+      <small class="hint">Choisissez la rubrique de destination (Enquêtes, Académie, Communauté, Médias du Sénégal…). La rédaction valide avant publication.</small>
+      {% if form.destination.errors %}<div class="errmsg">{{ form.destination.errors.0 }}</div>{% endif %}
+    </div>
     <div class="field"><label>Titre</label>{{ form.titre }}{% if form.titre.errors %}<div class="errmsg">{{ form.titre.errors.0 }}</div>{% endif %}</div>
     <div class="field"><label>Résumé <span class="opt">(optionnel)</span></label>{{ form.resume }}</div>
     <div class="field">
@@ -48,6 +53,7 @@
       <div class="field"><label>Image de la publication</label>{{ form.image }}<small class="hint">JPG, PNG…</small></div>
       <div class="field"><label>Fichier joint</label>{{ form.fichier }}<small class="hint">Audio, vidéo ou document</small></div>
     </div>
+    <div class="field"><label>Vidéo YouTube <span class="opt">(optionnel)</span></label>{{ form.video_url }}<small class="hint">Collez un lien YouTube : la vidéo s'affichera dans la publication.</small>{% if form.video_url.errors %}<div class="errmsg">{{ form.video_url.errors.0 }}</div>{% endif %}</div>
     <button class="btn btn-green btn-block" type="submit">{% if edition %}Enregistrer les modifications{% else %}Soumettre pour validation{% endif %} <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     {% if edition %}<a class="btn btn-ghost btn-block" href="{% url 'compte' %}" style="margin-top:.6rem">Annuler</a>{% endif %}
   </form>

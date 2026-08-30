@@ -31,6 +31,11 @@ def ask(request):
     if not isinstance(historique, list):
         historique = None
 
-    # Mode chatbot : reponse en texte clair, sans recherche web ni liens (rapide).
-    return JsonResponse(repondre(question, historique=historique,
-                                 avec_web=False, avec_sources=False))
+    # Intention choisie par l'utilisateur : rechercher / retrouver / comparer / expliquer.
+    mode = (data.get('mode') or '').strip().lower()
+    if mode not in ('rechercher', 'retrouver', 'comparer', 'expliquer'):
+        mode = None
+
+    # Looy laaj cite ses sources (titre, date, lien) et un niveau de confiance.
+    return JsonResponse(repondre(question, historique=historique, mode=mode,
+                                 avec_web=True, avec_sources=True))

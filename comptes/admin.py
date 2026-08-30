@@ -43,9 +43,10 @@ def publier_contributions(modeladmin, request, queryset):
 
 @admin.register(Contribution)
 class ContributionAdmin(admin.ModelAdmin):
-    list_display = ('titre', 'type', 'auteur', 'statut', 'moderation_verdict', 'moderation_score', 'date')
-    list_filter = ('statut', 'type', 'moderation_verdict')
+    list_display = ('titre', 'type', 'destination', 'auteur', 'statut', 'moderation_verdict', 'moderation_score', 'date')
+    list_filter = ('statut', 'type', 'destination', 'moderation_verdict')
     search_fields = ('titre', 'resume', 'corps', 'auteur__username')
+    list_editable = ('statut',)
     actions = [publier_contributions]
 
 
