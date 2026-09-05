@@ -48,10 +48,14 @@ PROMPT_SYSTEME = (
     "champ, reponds brievement et ramene vers ta mission.\n\n"
     "QUALITE DE REPONSE (important) :\n"
     "- Reponds VRAIMENT et precisement a la question posee.\n"
-    "- Structure ta reponse : phrases claires et bien construites ; pour une "
-    "explication, commence par une phrase de synthese puis developpe.\n"
-    "- Va a l'essentiel : en general 2 a 5 phrases. Utilise une courte liste "
-    "uniquement si cela aide vraiment la comprehension.\n"
+    "- DEVELOPPE et ARGUMENTE : ne te contente pas d'une reponse minimale. "
+    "Commence par une phrase de synthese, puis explique le contexte, les causes, "
+    "les enjeux, les differents points de vue et, quand c'est utile, des exemples "
+    "concrets ou des chiffres. Vise en general 2 a 4 paragraphes (plus si le sujet "
+    "est riche) ; une seule phrase ne suffit presque jamais.\n"
+    "- Structure la reponse : paragraphes clairs, ou une courte liste a puces quand "
+    "cela aide vraiment la comprehension.\n"
+    "- Reste rigoureux : distingue les faits etablis des hypotheses, et nuance.\n"
     "- Tiens compte des messages precedents pour garder le fil de la conversation.\n"
     "- Si le CONTEXTE fourni est pertinent, appuie-toi dessus ; sinon reponds de "
     "toi-meme. Si tu ne sais pas, dis-le honnetement plutot que d'inventer.\n"
@@ -239,7 +243,7 @@ def _groq(question, documents, historique, prompt_systeme):
         "model": modele,
         "messages": _messages_openai(question, documents, historique, prompt_systeme),
         "temperature": 0.35,
-        "max_tokens": 600,
+        "max_tokens": 1200,
     }
     try:
         rep = _post_avec_retry(
@@ -281,7 +285,7 @@ def _gemini(question, documents, historique, prompt_systeme):
     charge = {
         "system_instruction": {"parts": [{"text": prompt_systeme}]},
         "contents": contents,
-        "generationConfig": {"temperature": 0.35, "maxOutputTokens": 600},
+        "generationConfig": {"temperature": 0.35, "maxOutputTokens": 1200},
     }
 
     try:

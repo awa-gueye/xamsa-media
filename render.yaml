@@ -23,6 +23,12 @@ services:
         value: "0"
       - key: DJANGO_SECRET_KEY
         generateValue: true          # Render genere une cle secrete forte
+      # Domaine personnalise (le .onrender.com reste autorise automatiquement).
+      # Adaptez si votre domaine change.
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "xamsa-media.com,www.xamsa-media.com"
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: "https://xamsa-media.com,https://www.xamsa-media.com"
       - key: DATABASE_URL
         sync: false                   # URL PostgreSQL Neon (dashboard) :
                                       # postgresql://user:pass@ep-xxx.neon.tech/db?sslmode=require
@@ -35,13 +41,24 @@ services:
       - key: CLOUDINARY_URL
         sync: false                   # cloudinary://cle:secret@cloud (dashboard)
       # --- Assistant IA (Looy laaj) ---
+      # Pour utiliser Groq (recommande, gratuit et fiable) : mettre LLM_PROVIDER=groq
+      # et renseigner GROQ_API_KEY dans le dashboard. Cle : https://console.groq.com/keys
       - key: LLM_PROVIDER
         value: gemini
       - key: GEMINI_API_KEY
         sync: false                   # a renseigner dans le dashboard Render
       - key: GEMINI_MODEL
         value: gemini-flash-lite-latest
+      - key: GROQ_API_KEY
+        sync: false                   # cle Groq (dashboard) — si LLM_PROVIDER=groq
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
       # --- Email (reinitialisation du mot de passe) ---
+      # Option recommandee et fiable : Brevo (API HTTP). Definir BREVO_API_KEY
+      # dans le dashboard -> l'envoi passe par HTTPS (aucun probleme de SMTP).
+      - key: BREVO_API_KEY
+        sync: false                   # cle API Brevo (dashboard) — laisser vide pour utiliser Gmail
+      # Option SMTP (Gmail) : utilisee si BREVO_API_KEY est vide.
       - key: EMAIL_HOST
         value: smtp.gmail.com
       - key: EMAIL_PORT

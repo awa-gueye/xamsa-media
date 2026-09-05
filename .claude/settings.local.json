@@ -33,7 +33,19 @@
       "Bash(DJANGO_DEBUG=0 python manage.py collectstatic --noinput)",
       "Bash(DATABASE_URL=postgres://u:p@host:5432/xamsa DJANGO_DEBUG=0 DJANGO_SECRET_KEY=test-key python -c ' *)",
       "Bash(DJANGO_DEBUG=0 DJANGO_SECRET_KEY=\"une-cle-de-test-suffisamment-longue-pour-la-prod-123456\" DATABASE_URL=\"postgres://u:p@host:5432/xamsa\" DJANGO_ALLOWED_HOSTS=\"xamsa-media.onrender.com\" python manage.py check --deploy)",
-      "Bash(DJANGO_DEBUG=0 DJANGO_SECRET_KEY=cle-test-longue-pour-prod-1234567890 DATABASE_URL=postgres://u:p@h:5432/x DJANGO_ALLOWED_HOSTS=x.onrender.com python -c ' *)"
+      "Bash(DJANGO_DEBUG=0 DJANGO_SECRET_KEY=cle-test-longue-pour-prod-1234567890 DATABASE_URL=postgres://u:p@h:5432/x DJANGO_ALLOWED_HOSTS=x.onrender.com python -c ' *)",
+      "Bash(CLOUDINARY_URL=cloudinary://123456789:abcSecretXYZ@demo-cloud python -c ' *)",
+      "Bash(python manage.py creer_admin)",
+      "Bash(ADMIN_EMAIL=\"admintest@x.sn\" ADMIN_PASSWORD=\"SuperMotDePasse2026!\" python manage.py creer_admin)",
+      "Bash(python manage.py collectstatic --no-input --dry-run)",
+      "Bash(DATABASE_URL=postgresql://u:p@ep-cool-name-123.eu-central-1.aws.neon.tech/xamsa?sslmode=require python -c ' *)",
+      "Bash(EMAIL_HOST=smtp.gmail.com EMAIL_HOST_PASSWORD='' python -c ' *)",
+      "Bash(EMAIL_HOST=smtp.gmail.com EMAIL_HOST_PASSWORD=abcd python -c ' *)",
+      "Bash(python -c \"from PIL import Image; im=Image.open\\('static/img/logo.png'\\); print\\(im.size, im.mode\\)\")",
+      "Bash(rm -f static/manifest.webmanifest)",
+      "Bash(python manage.py makemigrations redaction comptes)",
+      "Bash(python manage.py test_email awagueye200411@gmail.com)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/)"
     ]
   }
 }

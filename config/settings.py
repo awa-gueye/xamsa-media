@@ -186,24 +186,38 @@ LOGOUT_REDIRECT_URL = 'home'
 # --- Email (reinitialisation du mot de passe) ---
 # Envoi reel SEULEMENT si EMAIL_HOST **et** EMAIL_HOST_PASSWORD sont definis
 # (sinon backend console : evite un plantage 500 quand le mot de passe manque).
+# Trois modes, dans l'ordre de priorite :
+#   1. Brevo (API HTTP)  -> le plus fiable depuis un serveur (port 443, jamais
+#      bloque). Actif des que BREVO_API_KEY est defini.
+#   2. SMTP (Gmail...)   -> si EMAIL_HOST + EMAIL_HOST_PASSWORD sont definis.
+#   3. Console (repli)   -> aucun envoi reel (evite un 500 quand rien n'est configure).
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-# Vrai si l'envoi reel est possible : conditionne la verification par code a
+# Vrai si un envoi reel est possible : conditionne la verification par code a
 # l'inscription (sans email configure, on ne bloque pas les inscriptions).
-EMAIL_ACTIF = bool(EMAIL_HOST and EMAIL_HOST_PASSWORD)
-if EMAIL_HOST and EMAIL_HOST_PASSWORD:
+EMAIL_ACTIF = bool(BREVO_API_KEY or (EMAIL_HOST and EMAIL_HOST_PASSWORD))
+# L'expediteur : adresse validee (Brevo) ou adresse authentifiee (Gmail).
+DEFAULT_FROM_EMAIL = (os.environ.get('DEFAULT_FROM_EMAIL')
+                      or 'Xamsa Média <{}>'.format(EMAIL_HOST_USER or 'no-reply@xamsa.sn'))
+
+if BREVO_API_KEY:
+    EMAIL_BACKEND = 'core.email_backend.BrevoAPIBackend'
+elif EMAIL_HOST and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
     EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', '0') == '1'
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '0' if EMAIL_USE_SSL else '1') == '1'
     EMAIL_TIMEOUT = 20
-    # Pour Gmail, l'expediteur DOIT etre l'adresse authentifiee (sinon spam/refus).
-    DEFAULT_FROM_EMAIL = (os.environ.get('DEFAULT_FROM_EMAIL')
-                          or 'Xamsa Média <{}>'.format(EMAIL_HOST_USER))
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Xamsa Média <no-reply@xamsa.sn>')
+    if not DEBUG:
+        import logging as _logging
+        _logging.getLogger('django').warning(
+            "EMAIL non configure en production : aucun email ne sera envoye "
+            "(reinitialisation de mot de passe, verification). Definissez "
+            "BREVO_API_KEY ou EMAIL_HOST_PASSWORD.")
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # lien valable 24 h
 
 # --- Journalisation : afficher les erreurs (500) dans la console (logs Render) ---

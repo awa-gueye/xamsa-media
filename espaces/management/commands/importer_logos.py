@@ -77,8 +77,9 @@ class Command(BaseCommand):
                 fichiers[_cle(os.path.splitext(f)[0])] = chemin
 
         # Stockage permanent (Cloudinary) : inutile de re-uploader a chaque build.
-        from django.core.files.storage import default_storage
-        persistant = 'cloudinary' in type(default_storage).__module__.lower()
+        from django.conf import settings
+        backend = settings.STORAGES.get('default', {}).get('BACKEND', '')
+        persistant = 'cloudinary' in backend.lower()
 
         ok, ignores, absents_media, absents_fichier = 0, 0, [], []
         for titre, cle in MAPPING.items():

@@ -285,14 +285,6 @@
   function historique() {
     return turns.map(function (t) { return { role: t.role === 'me' ? 'user' : 'bot', texte: t.texte }; });
   }
-  // ---- Intentions : rechercher / retrouver / comparer / expliquer ----
-  var currentMode = 'rechercher';
-  document.querySelectorAll('#chatModes .chat-mode').forEach(function (b) {
-    b.onclick = function () {
-      document.querySelectorAll('#chatModes .chat-mode').forEach(function (x) { x.classList.remove('active'); });
-      b.classList.add('active'); currentMode = b.dataset.mode; input.focus();
-    };
-  });
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
   // Bloc « Sources -> dates -> liens -> niveau de confiance » sous une reponse.
   function renderSources(el, data) {
@@ -327,7 +319,7 @@
     addMessage(q, 'me');
     var t = document.createElement('div'); t.className = 'msg bot typing'; t.innerHTML = '<span></span><span></span><span></span>';
     cbody.appendChild(t); cbody.scrollTop = cbody.scrollHeight;
-    fetch('/assistant/ask/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q, historique: prev, mode: currentMode }) })
+    fetch('/assistant/ask/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q, historique: prev }) })
       .then(function (r) { return r.json(); }).then(function (data) { t.remove(); var el = addMessage(data.texte || '', 'bot'); renderSources(el, data); })
       .catch(function () { t.remove(); addMessage('Une erreur est survenue. Reessayez.', 'bot'); });
   }
