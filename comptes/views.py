@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -9,6 +11,8 @@ from django.views.decorators.http import require_POST
 
 from .forms import ConnexionForm, ContributionForm, InscriptionForm
 from .models import Commentaire, Contribution, Favori, Notification, Profil, Reaction
+
+logger = logging.getLogger(__name__)
 
 ROLES = [
     ('lecteur', "Lecteur / Citoyen", "Suivez l'actualité, commentez et proposez des sujets."),
@@ -29,6 +33,24 @@ def _envoyer_code_email(email, prenom, code):
          "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.\n\n"
          "L'équipe Xamsa Média").format(prenom, code),
         settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False)
+
+
+def _creer_compte_depuis_session(request, pend, connecter=True):
+    """Cree le compte (User + Profil) a partir des donnees en session, une fois
+    l'inscription validee (code verifie) OU en repli si l'email est indisponible.
+    Le mot de passe dans `pend['password']` est deja hache."""
+    user = User(username=pend['email'], email=pend['email'],
+                first_name=pend['prenom'], last_name=pend['nom'])
+    user.password = pend['password']  # deja hache (make_password)
+    user.save()
+    Profil.objects.create(
+        user=user, type_profil=pend['type_profil'], telephone=pend.get('telephone', ''),
+        localisation=pend.get('localisation', ''), organisation=pend.get('organisation', ''),
+        photo=pend.get('photo') or None)
+    request.session.pop('inscription', None)
+    if connecter:
+        login(request, user)
+    return user
 
 
 def inscription(request):
@@ -68,8 +90,15 @@ def inscription(request):
             try:
                 _envoyer_code_email(d['email'], d['prenom'], code)
             except Exception:
-                messages.error(request, "L'envoi du code a échoué. Réessayez dans un moment.")
-                return render(request, 'comptes/inscription.html', {'form': form, 'roles': ROLES})
+                # L'email est indisponible : on NE bloque JAMAIS l'inscription.
+                # Le compte est cree directement et l'utilisateur est connecte.
+                logger.exception("Envoi du code de verification impossible : "
+                                 "creation directe du compte %s", d['email'])
+                _creer_compte_depuis_session(request, request.session['inscription'])
+                messages.success(
+                    request, "Bienvenue sur Xamsa Média ! Votre compte a été créé. "
+                    "(La vérification par email n'était pas disponible, ce n'est pas grave.)")
+                return redirect('home')
             return redirect('verifier_email')
     else:
         form = InscriptionForm()
@@ -112,16 +141,7 @@ def verifier_email(request):
                 return redirect('inscription')
             erreur = 'Code incorrect. Réessayez.'
         else:
-            user = User(username=pend['email'], email=pend['email'],
-                        first_name=pend['prenom'], last_name=pend['nom'])
-            user.password = pend['password']  # deja hache
-            user.save()
-            Profil.objects.create(
-                user=user, type_profil=pend['type_profil'], telephone=pend['telephone'],
-                localisation=pend['localisation'], organisation=pend['organisation'],
-                photo=pend['photo'] or None)
-            del request.session['inscription']
-            login(request, user)
+            _creer_compte_depuis_session(request, pend)
             messages.success(request, 'Votre compte est validé. Bienvenue sur Xamsa Média !')
             return redirect('home')
     return render(request, 'comptes/verifier_email.html', {'email': pend['email'], 'erreur': erreur})
