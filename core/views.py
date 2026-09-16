@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Vues des ecrans principaux."""
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from espaces.models import ItemCommunaute, MediaSenegal, Ressource
@@ -171,6 +171,30 @@ def recherche(request):
                 autres.append({'titre': o.titre, 'espace': espace, 'desc': o.description, 'lien': o.lien})
     return render(request, 'recherche.html', {'q': q, 'articles': articles, 'revue': revue,
                                                'autres': autres, 'reponse_ia': reponse_ia})
+
+
+def newsletter(request):
+    """Inscription à la lettre d'information depuis le pied de page (toutes pages)."""
+    from django.contrib import messages
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
+    from core.models import AbonneNewsletter
+
+    suivant = request.POST.get('next') or request.META.get('HTTP_REFERER') or reverse('home')
+    if request.method != 'POST':
+        return redirect(suivant)
+    email = (request.POST.get('email') or '').strip().lower()
+    try:
+        validate_email(email)
+    except ValidationError:
+        messages.error(request, "Veuillez saisir une adresse email valide.")
+        return redirect(suivant)
+    _, cree = AbonneNewsletter.objects.get_or_create(email=email)
+    if cree:
+        messages.success(request, "Merci ! Vous êtes bien inscrit(e) à la lettre d'information.")
+    else:
+        messages.success(request, "Vous êtes déjà inscrit(e) à la lettre d'information.")
+    return redirect(suivant)
 
 
 def service_worker(request):

@@ -95,9 +95,9 @@
           <div class="name">Xamsa <span>Média</span></div>
           <p>Journalisme d'investigation, analyse des médias, académie et communauté. L'observatoire indépendant de la presse sénégalaise.</p>
           <div class="social">
-            <a href="#" aria-label="Facebook"><svg class="icon" viewBox="0 0 24 24"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"/></svg></a>
-            <a href="#" aria-label="TikTok"><svg class="icon" viewBox="0 0 24 24"><path d="M15 4c.5 2.3 2 3.8 4.3 4v2.6c-1.6.1-3-.4-4.3-1.2v5.9a5.3 5.3 0 1 1-5.3-5.3c.3 0 .6 0 .9.1v2.7a2.6 2.6 0 1 0 1.8 2.5V4H15Z"/></svg></a>
-            <a href="#" aria-label="Instagram"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="https://www.facebook.com/share/1EMtNaMrYk/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><svg class="icon" viewBox="0 0 24 24"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"/></svg></a>
+            <a href="https://www.tiktok.com/@dioptfm?_r=1&_t=ZS-99JmXs9ngaV" target="_blank" rel="noopener" aria-label="TikTok"><svg class="icon" viewBox="0 0 24 24"><path d="M15 4c.5 2.3 2 3.8 4.3 4v2.6c-1.6.1-3-.4-4.3-1.2v5.9a5.3 5.3 0 1 1-5.3-5.3c.3 0 .6 0 .9.1v2.7a2.6 2.6 0 1 0 1.8 2.5V4H15Z"/></svg></a>
+            <a href="https://www.youtube.com/@PapeLayeDiop-u1s" target="_blank" rel="noopener" aria-label="YouTube"><svg class="icon" viewBox="0 0 24 24"><path d="M22 12s0-3.5-.4-5.1a2.7 2.7 0 0 0-1.9-1.9C17.9 4.5 12 4.5 12 4.5s-5.9 0-7.7.5A2.7 2.7 0 0 0 2.4 6.9C2 8.5 2 12 2 12s0 3.5.4 5.1a2.7 2.7 0 0 0 1.9 1.9c1.8.5 7.7.5 7.7.5s5.9 0 7.7-.5a2.7 2.7 0 0 0 1.9-1.9C22 15.5 22 12 22 12Z"/><path d="M10 9.2v5.6l5-2.8-5-2.8Z" fill="currentColor" stroke="none"/></svg></a>
           </div>
         </div>
         <div class="fcol">
@@ -111,10 +111,11 @@
         <div class="fcol news">
           <h4>Lettre d'information</h4>
           <p>Recevez chaque semaine notre revue critique des médias sénégalais.</p>
-          <div class="newsform">
-            <input type="email" placeholder="Votre adresse email">
-            <button aria-label="S'abonner"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></button>
-          </div>
+          <form class="newsform" method="post" action="{% url 'newsletter' %}">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Votre adresse email" required>
+            <button type="submit" aria-label="S'abonner"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></button>
+          </form>
           <div class="contact">
             <a href="mailto:xamsamedia@gmail.com"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> xamsamedia@gmail.com</a>
             <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Dakar, Sénégal</span>
