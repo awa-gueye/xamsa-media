@@ -558,7 +558,8 @@ body{background:var(--cream)}
 
 /* messages flash */
 .flash{position:fixed;top:84px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:.5rem;width:min(520px,92%)}
-.flash-item{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--pine);border-radius:12px;padding:.9rem 1.1rem;box-shadow:var(--shadow);font-family:var(--sans);font-weight:600;color:var(--ink);animation:flashIn .3s ease}
+.flash-item{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--pine);border-radius:12px;padding:.9rem 1.1rem;box-shadow:var(--shadow);font-family:var(--sans);font-weight:600;color:var(--ink);animation:flashIn .3s ease;cursor:pointer;transition:opacity .4s ease,transform .4s ease}
+.flash-item.gone{opacity:0;transform:translateY(-10px)}
 .flash-item.success{border-left-color:#1c7a44}
 .flash-item.error{border-left-color:#c0392b}
 @keyframes flashIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}

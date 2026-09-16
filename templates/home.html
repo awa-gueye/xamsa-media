@@ -6,24 +6,24 @@
 
 <section class="home-hero">
   <div class="hero-bg" id="heroBg">
-    {% for it in latest %}<div class="hbg {% if forloop.first %}on{% endif %}"{% if it.image_url %} style="background-image:url('{{ it.image_url }}')"{% endif %}></div>
+    {% for it in hero %}<div class="hbg {% if forloop.first %}on{% endif %}"{% if it.image %} style="background-image:url('{{ it.image }}')"{% endif %}></div>
     {% empty %}<div class="hbg on"></div>{% endfor %}
   </div>
   <div class="hero-veil"></div>
   <div class="hero-content">
     <span class="dm-label" id="dmLabel">Dernière minute{% if une %} &middot; {{ une.date|date:"d/m H:i" }}{% endif %}</span>
     <div class="hero-carousel" id="heroCarousel">
-      {% for it in latest %}
+      {% for it in hero %}
       <div class="hero-slide {% if forloop.first %}on{% endif %}">
-        <a href="{{ it.url }}" target="_blank" rel="noopener" style="color:#fff"><h1>{{ it.titre_propre }}</h1></a>
-        <span class="src"><span class="tag">{{ it.source.nom }}</span> {{ it.date|date:"H:i" }}</span>
+        <a href="{{ it.url }}"{% if it.externe %} target="_blank" rel="noopener"{% endif %} style="color:#fff"><h1>{{ it.titre }}</h1></a>
+        <span class="src"><span class="tag">{{ it.source }}</span> {{ it.date|date:"d/m H:i" }}</span>
       </div>
       {% empty %}
-      <div class="hero-slide on"><h1>L'actualité du Sénégal, en direct.</h1><span class="src">Lancez python manage.py ingest pour afficher les dernières nouvelles</span></div>
+      <div class="hero-slide on"><h1>L'actualité du Sénégal, en direct.</h1><span class="src">Publiez un article et cochez « Dernière minute » pour l'afficher ici.</span></div>
       {% endfor %}
     </div>
     <div class="hero-dots" id="heroDots">
-      {% for it in latest %}<button {% if forloop.first %}class="on"{% endif %} data-i="{{ forloop.counter0 }}"></button>{% endfor %}
+      {% for it in hero %}<button {% if forloop.first %}class="on"{% endif %} data-i="{{ forloop.counter0 }}"></button>{% endfor %}
     </div>
     <form class="hero-search" action="{% url 'recherche' %}" method="get">
       <input type="search" name="q" placeholder="Rechercher une info, une source, un thème sur tout le site..." autocomplete="off">
@@ -153,23 +153,6 @@
     </div>
     <div class="brief-body">{{ brief.contenu|linebreaksbr }}</div>
     <p class="brief-foot">Synthèse automatique de la revue de presse. Vérifiez toujours l'information à la source.</p>
-  </div>
-</div></section>
-{% endif %}
-
-{% if publications %}
-<section class="block"><div class="wrap">
-  <div class="sec-head reveal"><div><span class="eyebrow">La communauté publie</span><h2>Dernières contributions</h2>
-    <p class="lead">Les contenus proposés par la communauté et validés par la rédaction.</p></div>
-    <a class="more" href="{% url 'communaute_type' 'contribution' %}">Voir tout <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-  <div class="cardgrid">
-    {% for c in publications %}
-    <a class="acard reveal" href="{% url 'publication_detail' c.pk %}">
-      <div class="thumb">{% if c.image %}<img src="{{ c.image.url }}" alt="" loading="lazy">{% endif %}<span class="badge clay">{{ c.get_type_display }}</span></div>
-      <div class="body"><h3>{{ c.titre }}</h3>{% if c.resume %}<p>{{ c.resume|truncatewords:18 }}</p>{% endif %}
-        <span class="meta">Par {{ c.auteur.first_name|default:c.auteur.username }}</span></div>
-    </a>
-    {% endfor %}
   </div>
 </div></section>
 {% endif %}

@@ -8,6 +8,16 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(function (el, i) { el.style.transitionDelay = ((i % 3) * 80) + 'ms'; io.observe(el); });
 
+  // ---- Messages flash : disparaissent tout seuls au bout de ~4 s ----
+  document.querySelectorAll('.flash .flash-item').forEach(function (m) {
+    m.addEventListener('click', function () { m.classList.add('gone'); });
+    setTimeout(function () { m.classList.add('gone'); }, 4000);
+    // Retire l'element du DOM une fois l'animation de sortie terminee.
+    m.addEventListener('transitionend', function () {
+      if (m.classList.contains('gone') && m.parentNode) { m.parentNode.removeChild(m); }
+    });
+  });
+
   // ---- Menu mobile ----
   var burger = document.getElementById('burger'), mnav = document.getElementById('mobileNav');
   if (burger && mnav) {

@@ -27,20 +27,40 @@ MEDIA_TABS = [('histoire', 'Histoire des médias'), ('portrait', 'Portraits de j
               ('numerique', 'Médias numériques'), ('podcast', 'Podcasts')]
 
 
+def _hero_items():
+    """Elements du carrousel « Dernière minute » de l'accueil.
+
+    Priorite aux publications de Xamsa Media choisies par l'admin (case
+    « Dernière minute ») ; a defaut les dernieres publications ; en tout dernier
+    recours la revue de presse, pour que le carrousel ne soit jamais vide.
+    """
+    articles = list(Article.objects.filter(publie=True, derniere_minute=True)
+                    .order_by('-date_publication')[:6])
+    if not articles:
+        articles = list(Article.objects.filter(publie=True).order_by('-date_publication')[:6])
+    if articles:
+        return [{'titre': a.titre, 'url': a.get_absolute_url(), 'image': a.visuel,
+                 'source': 'Xamsa Média', 'date': a.date_publication, 'externe': False}
+                for a in articles]
+    # Aucun article : repli sur la revue de presse (liens externes).
+    return [{'titre': it.titre_propre, 'url': it.url, 'image': it.image_url,
+             'source': it.source.nom, 'date': it.date, 'externe': True}
+            for it in RevueItem.objects.select_related('source').order_by('-date')[:5]]
+
+
 def home(request):
     from veille.models import Brief
-    latest = list(RevueItem.objects.select_related('source').order_by('-date')[:5])
+    hero = _hero_items()
     # « À la une » : l'article/dossier mis en avant par l'admin (case « À la une »).
     une_article = (Article.objects.filter(publie=True, a_la_une=True)
                    .order_by('-date_publication').first())
     return render(request, 'home.html', {
-        'latest': latest, 'une': latest[0] if latest else None,
+        'hero': hero, 'une': hero[0] if hero else None,
         'une_article': une_article,
         'revue': RevueItem.objects.select_related('source').order_by('-date')[:3],
         'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
         'reportages': Article.objects.filter(publie=True, type='reportage')[:3],
         'mur': RevueItem.objects.select_related('source').order_by('-date')[:14],
-        'publications': Contribution.objects.filter(statut='publie').select_related('auteur')[:6],
         'brief': Brief.objects.first(),
     })
 

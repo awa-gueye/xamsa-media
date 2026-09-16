@@ -49,6 +49,9 @@ class Article(models.Model):
                                 help_text="Lien YouTube : la vidéo sera affichée dans l'article.")
     temps_lecture = models.PositiveIntegerField('Temps de lecture (min)', default=6)
     a_la_une = models.BooleanField('A la une', default=False)
+    derniere_minute = models.BooleanField(
+        'Dernière minute (carrousel accueil)', default=False,
+        help_text="Affiche cette publication dans le carrousel « Dernière minute » de l'accueil.")
     publie = models.BooleanField('Publie', default=True)
     date_publication = models.DateTimeField(default=timezone.now)
 
