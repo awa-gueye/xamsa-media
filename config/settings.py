@@ -220,6 +220,10 @@ else:
             "BREVO_API_KEY ou EMAIL_HOST_PASSWORD.")
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # lien valable 24 h
 
+# Adresse qui recoit les alertes internes (nouvelle contribution a valider...).
+ADMIN_EMAIL = (os.environ.get('ADMIN_EMAIL', '') or EMAIL_HOST_USER
+               or 'xamsamedia@gmail.com')
+
 # --- Journalisation : afficher les erreurs (500) dans la console (logs Render) ---
 LOGGING = {
     'version': 1,

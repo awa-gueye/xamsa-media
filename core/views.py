@@ -51,15 +51,10 @@ def _hero_items():
 def home(request):
     from veille.models import Brief
     hero = _hero_items()
-    # « À la une » : l'article/dossier mis en avant par l'admin (case « À la une »).
-    une_article = (Article.objects.filter(publie=True, a_la_une=True)
-                   .order_by('-date_publication').first())
     return render(request, 'home.html', {
         'hero': hero, 'une': hero[0] if hero else None,
-        'une_article': une_article,
         'revue': RevueItem.objects.select_related('source').order_by('-date')[:3],
         'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
-        'reportages': Article.objects.filter(publie=True, type='reportage')[:3],
         'mur': RevueItem.objects.select_related('source').order_by('-date')[:14],
         'brief': Brief.objects.first(),
     })
@@ -97,7 +92,8 @@ def medias_senegal(request, type_slug=None):
 # ---------- DOSSIERS ----------
 def dossiers(request):
     return render(request, 'dossiers.html', {
-        'nos_dossiers': Article.objects.filter(publie=True, type__in=['dossier', 'enquete'])[:6],
+        'nos_dossiers': Article.objects.filter(
+            publie=True, type__in=['dossier', 'enquete', 'reportage'])[:9],
         'curation': RevueItem.objects.select_related('source').order_by('-date')[:8],
         'contributions': _contribs_pour(['enquete', 'reportage', 'dossier', 'politique']),
         'contrib_titre': 'Enquêtes et dossiers de la communauté'})

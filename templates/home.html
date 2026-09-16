@@ -34,21 +34,6 @@
   <a class="scroll-ind" href="#revue" aria-label="Descendre"><svg class="icon" viewBox="0 0 24 24" style="font-size:1.6rem"><rect x="8" y="3" width="8" height="14" rx="4"/><path d="M12 7v3"/><path d="M9 20l3 2 3-2"/></svg></a>
 </section>
 
-{% if une_article %}
-<section class="block" style="padding-bottom:0"><div class="wrap">
-  <div class="sec-head reveal"><div><span class="eyebrow">À la une</span><h2>Le dossier principal</h2></div></div>
-  <a class="feature-une reveal" href="{{ une_article.get_absolute_url }}">
-    <div class="fu-media">{% if une_article.visuel %}<img src="{{ une_article.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div></div>
-    <div class="fu-body">
-      <span class="badge ochre">{{ une_article.categorie|default:une_article.get_type_display }}</span>
-      <h3>{{ une_article.titre }}</h3>
-      {% if une_article.chapo %}<p>{{ une_article.chapo|truncatewords:40 }}</p>{% endif %}
-      <span class="meta">Lire le dossier &middot; {{ une_article.temps_lecture }} min <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </div>
-  </a>
-</div></section>
-{% endif %}
-
 <section class="presswall">
   <div class="head"><span class="t">Dernières actualités</span><span class="live">En continu &middot; le mur de la presse</span></div>
   <div class="marquee-wrap">
@@ -91,23 +76,6 @@
     </div>
   </div>
 </section>
-{% endif %}
-
-{% if reportages %}
-<section class="block"><div class="wrap">
-  <div class="sec-head reveal"><div><span class="eyebrow">Sur le terrain</span><h2>Les reportages</h2>
-    <p class="lead">Récits et immersions produits par Xamsa Média.</p></div>
-    <a class="more" href="{% url 'dossiers' %}">Voir tout <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-  <div class="cardgrid">
-    {% for a in reportages %}
-    <a class="acard reveal" href="{{ a.get_absolute_url }}">
-      <div class="thumb">{% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<span class="badge pine">Reportage</span></div>
-      <div class="body"><h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:18 }}</p>{% endif %}
-        <span class="meta">{{ a.temps_lecture }} min de lecture</span></div>
-    </a>
-    {% endfor %}
-  </div>
-</div></section>
 {% endif %}
 
 <section class="block" id="revue">

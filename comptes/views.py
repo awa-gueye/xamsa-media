@@ -35,6 +35,20 @@ def _envoyer_code_email(email, prenom, code):
         settings.DEFAULT_FROM_EMAIL, [email], fail_silently=False)
 
 
+def _notifier_email(sujet, corps, destinataires):
+    """Envoie une notification par email en best-effort : n'echoue jamais et ne
+    bloque jamais l'action en cours (commentaire, publication...)."""
+    from django.conf import settings
+    from django.core.mail import send_mail
+    destinataires = [e for e in destinataires if e]
+    if not destinataires or not getattr(settings, 'EMAIL_ACTIF', False):
+        return
+    try:
+        send_mail(sujet, corps, settings.DEFAULT_FROM_EMAIL, destinataires, fail_silently=True)
+    except Exception:
+        logger.exception("Notification email non envoyee (%s)", sujet)
+
+
 def _creer_compte_depuis_session(request, pend, connecter=True):
     """Cree le compte (User + Profil) a partir des donnees en session, une fois
     l'inscription validee (code verifie) OU en repli si l'email est indisponible.
@@ -229,6 +243,22 @@ def publier(request):
             messages.warning(request, "Votre contribution n'a pas pu être acceptée (hors sujet ou non conforme). Vous pouvez la modifier et la resoumettre.")
         else:
             messages.success(request, "Votre contribution a été soumise. La rédaction l'examinera avant publication.")
+        # La redaction est prevenue par email des qu'une contribution attend
+        # une validation humaine, pour qu'elle ne reste pas en attente sans suite.
+        if contrib.statut == 'attente':
+            from django.conf import settings
+            from django.urls import reverse
+            auteur = request.user.get_full_name() or request.user.username
+            lien = request.build_absolute_uri(reverse('moderation'))
+            _notifier_email(
+                "Nouvelle contribution à valider — Xamsa Média",
+                ("Une nouvelle contribution attend votre validation :\n\n"
+                 "Titre : {}\nType : {}\nDestination : {}\nAuteur : {}\n\n"
+                 "Ouvrez la modération pour la traiter :\n{}\n\n"
+                 "L'équipe Xamsa Média").format(
+                    contrib.titre, contrib.get_type_display(),
+                    contrib.get_destination_display() or '—', auteur, lien),
+                [settings.ADMIN_EMAIL])
         return redirect('compte')
     return render(request, 'comptes/publier.html', {'form': form, 'ptype': ptype, 'profil': profil})
 
@@ -292,6 +322,18 @@ def commenter(request, pk):
         Notification.creer(pub.auteur, request.user, Notification.COMMENTAIRE, pub, commentaire)
         if parent and parent.auteur_id != pub.auteur_id:
             Notification.creer(parent.auteur, request.user, Notification.REPONSE, pub, commentaire)
+        # Notification par email a l'auteur de la publication (best-effort).
+        if pub.auteur_id != request.user.id and pub.auteur.email:
+            qui = request.user.get_full_name() or request.user.username
+            lien = request.build_absolute_uri(pub.get_absolute_url() + '#commentaires')
+            _notifier_email(
+                "Nouveau commentaire sur votre publication — Xamsa Média",
+                ("Bonjour {},\n\n{} a commenté votre publication « {} » :\n\n"
+                 "« {} »\n\nLisez le commentaire et répondez ici :\n{}\n\n"
+                 "L'équipe Xamsa Média").format(
+                    pub.auteur.first_name or pub.auteur.username, qui, pub.titre,
+                    texte[:500], lien),
+                [pub.auteur.email])
     else:
         messages.error(request, 'Votre commentaire est vide.')
     return redirect(pub.get_absolute_url() + '#commentaires')
