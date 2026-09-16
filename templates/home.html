@@ -157,29 +157,6 @@
 </div></section>
 {% endif %}
 
-<section class="block dark" id="looylaaj"><div class="wrap">
-  <div class="sec-head reveal"><div><span class="eyebrow">Looy laaj ?</span><h2>Posez votre question</h2>
-    <p class="lead">Rechercher, retrouver, comparer, expliquer — chaque réponse cite ses sources, leurs dates, les liens et un niveau de confiance.</p></div></div>
-  <div class="looy-modes reveal">
-    <button type="button" class="looy-mode" data-q="Qu'a déclaré le président sur le pétrole depuis 2024 ?">
-      <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <b>Rechercher</b><small>Une déclaration, un chiffre, un fait</small></button>
-    <button type="button" class="looy-mode" data-q="Trouve-moi les articles parlant de l'érosion à Saint-Louis depuis 2015.">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h6"/></svg>
-      <b>Retrouver</b><small>Des articles sur un sujet</small></button>
-    <button type="button" class="looy-mode" data-q="Compare la couverture de cette affaire par 5 médias.">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
-      <b>Comparer</b><small>Plusieurs médias entre eux</small></button>
-    <button type="button" class="looy-mode" data-q="Explique-moi le nouveau budget du Sénégal comme si j'avais 15 ans.">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h6M9 13h4"/></svg>
-      <b>Expliquer</b><small>Un sujet complexe, simplement</small></button>
-  </div>
-  <form class="hero-search looy-search reveal" action="{% url 'recherche' %}" method="get">
-    <input type="search" name="q" id="looyInput" placeholder="Ex. Qu'a déclaré le président sur le pétrole depuis 2024 ?" autocomplete="off">
-    <button type="submit" aria-label="Interroger Looy laaj"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-  </form>
-</div></section>
-
 {% if publications %}
 <section class="block"><div class="wrap">
   <div class="sec-head reveal"><div><span class="eyebrow">La communauté publie</span><h2>Dernières contributions</h2>
@@ -217,15 +194,4 @@
     </div>
   </div>
 </section>
-
-<script>
-  (function(){
-    var input=document.getElementById('looyInput');
-    document.querySelectorAll('.looy-mode').forEach(function(b){
-      b.addEventListener('click',function(){
-        if(input){ input.value=b.getAttribute('data-q'); input.focus(); }
-      });
-    });
-  })();
-</script>
 {% endblock %}
