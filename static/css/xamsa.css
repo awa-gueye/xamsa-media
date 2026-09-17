@@ -938,3 +938,27 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .conf-badge.high{background:rgba(31,122,77,.12);color:#1f7a4d}
 .conf-badge.mid{background:rgba(196,143,42,.15);color:#8a6212}
 .conf-badge.low{background:rgba(120,120,120,.14);color:var(--muted,#5b5b52)}
+
+/* ---- Accueil : dernière publication Xamsa en vedette (remplace l'ancien hero défilant) ---- */
+.hero-latest{background:var(--pine-deep,#0d1f17);padding:calc(var(--head,64px) + 1.6rem) 0 2.6rem}
+.hero-latest .wrap{max-width:1080px}
+.hl-card{display:block;background:var(--card,#fff);color:var(--ink,#1a1a17);border-radius:20px;overflow:hidden;box-shadow:0 22px 55px rgba(0,0,0,.32);text-decoration:none;transition:transform .18s ease}
+.hl-card:hover{transform:translateY(-3px)}
+.hl-media{background:#0d1f17;line-height:0}
+.hl-media img{display:block;width:100%;height:auto;max-height:min(60vh,540px);object-fit:contain;margin:0 auto}
+.hl-body{padding:1.6rem 1.9rem 1.9rem}
+.hl-tag{display:inline-block;font-family:var(--sans);font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--clay,#b5651d);padding:.32rem .8rem;border-radius:999px;margin-bottom:.7rem}
+.hl-body h1{font-family:var(--sans);font-weight:800;letter-spacing:-.02em;line-height:1.12;font-size:clamp(1.5rem,3.2vw,2.4rem);margin:.1rem 0}
+.hl-body p{color:var(--muted,#5b5b52);line-height:1.6;margin-top:.7rem;font-size:1.02rem}
+.hl-more{display:inline-flex;align-items:center;gap:.45rem;color:var(--green,#1f7a4d);font-weight:700;margin-top:1rem}
+.hl-card:hover .hl-more{gap:.7rem}
+.hl-empty{background:var(--card,#fff);border-radius:20px;padding:2.6rem 2rem;text-align:center;color:var(--ink,#1a1a17)}
+.hl-empty h1{font-family:var(--sans);font-weight:800;font-size:clamp(1.5rem,4vw,2.2rem)}
+.hl-empty p{color:var(--muted,#5b5b52);margin-top:.6rem}
+.hl-search{margin:1.5rem auto 0}
+
+/* ---- Bouton « Continuer avec Google » (auth) ---- */
+.btn-google{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;padding:.8rem 1rem;border:1px solid var(--line,#e6e6e0);border-radius:12px;background:#fff;color:#1a1a17;font-family:var(--sans);font-weight:600;text-decoration:none;transition:background .15s,box-shadow .15s}
+.btn-google:hover{background:#f7f7f4;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.auth-sep{display:flex;align-items:center;gap:.8rem;color:var(--muted,#5b5b52);margin:1.1rem 0;font-size:.82rem}
+.auth-sep::before,.auth-sep::after{content:"";flex:1;height:1px;background:var(--line,#e6e6e0)}

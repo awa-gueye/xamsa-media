@@ -161,6 +161,84 @@ def verifier_email(request):
     return render(request, 'comptes/verifier_email.html', {'email': pend['email'], 'erreur': erreur})
 
 
+def google_login(request):
+    """Démarre la connexion avec Google (OAuth2)."""
+    import secrets
+    from urllib.parse import urlencode
+    from django.conf import settings
+    from django.urls import reverse
+    if not getattr(settings, 'GOOGLE_OAUTH_ACTIF', False):
+        messages.error(request, "La connexion avec Google n'est pas encore configurée.")
+        return redirect('connexion')
+    etat = secrets.token_urlsafe(24)
+    request.session['google_oauth_state'] = etat
+    request.session['google_oauth_next'] = request.GET.get('next', '')
+    params = {
+        'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+        'redirect_uri': request.build_absolute_uri(reverse('google_callback')),
+        'response_type': 'code',
+        'scope': 'openid email profile',
+        'state': etat,
+        'access_type': 'online',
+        'prompt': 'select_account',
+    }
+    return redirect('https://accounts.google.com/o/oauth2/v2/auth?' + urlencode(params))
+
+
+def google_callback(request):
+    """Retour de Google : récupère l'email, connecte ou crée le compte."""
+    import requests
+    from django.conf import settings
+    from django.urls import reverse
+
+    if request.GET.get('error') or 'code' not in request.GET:
+        messages.error(request, "Connexion Google annulée.")
+        return redirect('connexion')
+    if request.GET.get('state') != request.session.get('google_oauth_state'):
+        messages.error(request, "Échec de la connexion Google (sécurité). Réessayez.")
+        return redirect('connexion')
+    request.session.pop('google_oauth_state', None)
+
+    redirect_uri = request.build_absolute_uri(reverse('google_callback'))
+    try:
+        jeton = requests.post('https://oauth2.googleapis.com/token', data={
+            'code': request.GET['code'],
+            'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            'redirect_uri': redirect_uri,
+            'grant_type': 'authorization_code',
+        }, timeout=15).json()
+        access = jeton.get('access_token')
+        if not access:
+            raise ValueError('token manquant')
+        infos = requests.get('https://www.googleapis.com/oauth2/v2/userinfo',
+                             headers={'Authorization': 'Bearer ' + access}, timeout=15).json()
+    except Exception:
+        logger.exception("Échec OAuth Google")
+        messages.error(request, "La connexion avec Google a échoué. Réessayez.")
+        return redirect('connexion')
+
+    email = (infos.get('email') or '').strip().lower()
+    if not email:
+        messages.error(request, "Google n'a pas fourni d'adresse email.")
+        return redirect('connexion')
+
+    user = (User.objects.filter(email__iexact=email).first()
+            or User.objects.filter(username__iexact=email).first())
+    nouveau = user is None
+    if nouveau:
+        user = User(username=email, email=email,
+                    first_name=infos.get('given_name', ''), last_name=infos.get('family_name', ''))
+        user.set_unusable_password()  # connexion uniquement via Google
+        user.save()
+        Profil.objects.create(user=user, type_profil='lecteur')
+
+    login(request, user)
+    messages.success(request, "Bienvenue sur Xamsa Média !" if nouveau
+                     else "Content de vous revoir !")
+    return redirect(request.session.pop('google_oauth_next', '') or 'home')
+
+
 def connexion(request):
     if request.user.is_authenticated:
         return redirect('home')

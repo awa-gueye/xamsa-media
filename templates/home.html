@@ -4,35 +4,28 @@
 {% block nav_home %}active{% endblock %}
 {% block content %}
 
-<section class="home-hero">
-  <div class="hero-bg" id="heroBg">
-    {% for it in hero %}<div class="hbg {% if forloop.first %}on{% endif %}"{% if it.image %} style="background-image:url('{{ it.image }}')"{% endif %}></div>
-    {% empty %}<div class="hbg on"></div>{% endfor %}
-  </div>
-  <div class="hero-veil"></div>
-  <div class="hero-content">
-    <span class="dm-label" id="dmLabel">Dernière minute{% if une %} &middot; {{ une.date|date:"d/m H:i" }}{% endif %}</span>
-    <div class="hero-carousel" id="heroCarousel">
-      {% for it in hero %}
-      <div class="hero-slide {% if forloop.first %}on{% endif %}">
-        <a href="{{ it.url }}"{% if it.externe %} target="_blank" rel="noopener"{% endif %} style="color:#fff"><h1>{{ it.titre }}</h1></a>
-        <span class="src"><span class="tag">{{ it.source }}</span> {{ it.date|date:"d/m H:i" }}</span>
-      </div>
-      {% empty %}
-      <div class="hero-slide on"><h1>L'actualité du Sénégal, en direct.</h1><span class="src">Publiez un article et cochez « Dernière minute » pour l'afficher ici.</span></div>
-      {% endfor %}
+<section class="hero-latest"><div class="wrap">
+  {% if une_pub %}
+  <a class="hl-card" href="{{ une_pub.get_absolute_url }}">
+    {% if une_pub.visuel %}<div class="hl-media"><img src="{{ une_pub.visuel }}" alt="{{ une_pub.titre }}"></div>{% endif %}
+    <div class="hl-body">
+      <span class="hl-tag">{{ une_pub.categorie|default:une_pub.get_type_display }}</span>
+      <h1>{{ une_pub.titre }}</h1>
+      {% if une_pub.chapo %}<p>{{ une_pub.chapo|truncatewords:36 }}</p>{% endif %}
+      <span class="hl-more">Lire la publication <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </div>
-    <div class="hero-dots" id="heroDots">
-      {% for it in hero %}<button {% if forloop.first %}class="on"{% endif %} data-i="{{ forloop.counter0 }}"></button>{% endfor %}
-    </div>
-    <form class="hero-search" action="{% url 'recherche' %}" method="get">
-      <input type="search" name="q" placeholder="Rechercher une info, une source, un thème sur tout le site..." autocomplete="off">
-      <button type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
-    </form>
+  </a>
+  {% else %}
+  <div class="hl-empty">
+    <h1>L'actualité du Sénégal, en direct.</h1>
+    <p>Publiez un article (et cochez « Dernière minute » dans l'admin) pour l'afficher ici.</p>
   </div>
-  </div>
-  <a class="scroll-ind" href="#revue" aria-label="Descendre"><svg class="icon" viewBox="0 0 24 24" style="font-size:1.6rem"><rect x="8" y="3" width="8" height="14" rx="4"/><path d="M12 7v3"/><path d="M9 20l3 2 3-2"/></svg></a>
-</section>
+  {% endif %}
+  <form class="hero-search hl-search" action="{% url 'recherche' %}" method="get">
+    <input type="search" name="q" placeholder="Rechercher une info, une source, un thème sur tout le site..." autocomplete="off">
+    <button type="submit" aria-label="Rechercher"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+  </form>
+</div></section>
 
 <section class="presswall">
   <div class="head"><span class="t">Dernières actualités</span><span class="live">En continu &middot; le mur de la presse</span></div>

@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-title" content="Xamsa Média">
   <link rel="apple-touch-icon" href="{% static 'img/logo.png' %}">
   <link rel="manifest" href="{% static 'manifest.json' %}">
-  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=41">
+  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=42">
 </head>
 <body>
   <header>
@@ -117,7 +117,7 @@
             <button type="submit" aria-label="S'abonner"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></button>
           </form>
           <div class="contact">
-            <a href="mailto:xamsamedia@gmail.com"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> xamsamedia@gmail.com</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=xamsamedia@gmail.com&su=Contact%20Xamsa%20M%C3%A9dia" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> xamsamedia@gmail.com</a>
             <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Dakar, Sénégal</span>
           </div>
         </div>
@@ -130,7 +130,7 @@
   </footer>
 
   {% include 'partials/chatbot.html' %}
-  <script src="{% static 'js/xamsa.js' %}?v=41"></script>
+  <script src="{% static 'js/xamsa.js' %}?v=42"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

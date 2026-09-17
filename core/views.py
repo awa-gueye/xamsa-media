@@ -27,32 +27,20 @@ MEDIA_TABS = [('histoire', 'Histoire des médias'), ('portrait', 'Portraits de j
               ('numerique', 'Médias numériques'), ('podcast', 'Podcasts')]
 
 
-def _hero_items():
-    """Elements du carrousel « Dernière minute » de l'accueil.
+def _une_publication():
+    """La toute derniere publication de Xamsa Media a mettre en avant sur l'accueil.
 
-    Priorite aux publications de Xamsa Media choisies par l'admin (case
-    « Dernière minute ») ; a defaut les dernieres publications ; en tout dernier
-    recours la revue de presse, pour que le carrousel ne soit jamais vide.
-    """
-    articles = list(Article.objects.filter(publie=True, derniere_minute=True)
-                    .order_by('-date_publication')[:6])
-    if not articles:
-        articles = list(Article.objects.filter(publie=True).order_by('-date_publication')[:6])
-    if articles:
-        return [{'titre': a.titre, 'url': a.get_absolute_url(), 'image': a.visuel,
-                 'source': 'Xamsa Média', 'date': a.date_publication, 'externe': False}
-                for a in articles]
-    # Aucun article : repli sur la revue de presse (liens externes).
-    return [{'titre': it.titre_propre, 'url': it.url, 'image': it.image_url,
-             'source': it.source.nom, 'date': it.date, 'externe': True}
-            for it in RevueItem.objects.select_related('source').order_by('-date')[:5]]
+    Priorite a une publication cochee « Dernière minute » par l'admin, sinon la
+    plus recente publiee. Uniquement du contenu Xamsa (aucune source externe)."""
+    return (Article.objects.filter(publie=True, derniere_minute=True)
+            .order_by('-date_publication').first()
+            or Article.objects.filter(publie=True).order_by('-date_publication').first())
 
 
 def home(request):
     from veille.models import Brief
-    hero = _hero_items()
     return render(request, 'home.html', {
-        'hero': hero, 'une': hero[0] if hero else None,
+        'une_pub': _une_publication(),
         'revue': RevueItem.objects.select_related('source').order_by('-date')[:3],
         'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
         'mur': RevueItem.objects.select_related('source').order_by('-date')[:14],

@@ -48,40 +48,10 @@
   });
   document.addEventListener('click', function () { document.querySelectorAll('.navitem.open').forEach(function (o) { o.classList.remove('open'); }); });
 
-  // ---- Carrousel "A la Une" + Mur de la presse (dynamiques, rafraichis en direct) ----
-  var carousel = document.getElementById('heroCarousel'),
-      dotsBox = document.getElementById('heroDots'),
-      dmLabel = document.getElementById('dmLabel'),
-      track = document.getElementById('track'),
-      heroBg = document.getElementById('heroBg');
-  var slides = [], dots = [], bgs = [], cur = 0, timer;
+  // ---- Mur de la presse (defile en direct ; le hero reste une seule publication Xamsa) ----
+  var track = document.getElementById('track');
 
   function esc(t) { var d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
-  function collect() {
-    slides = carousel ? [].slice.call(carousel.querySelectorAll('.hero-slide')) : [];
-    dots = dotsBox ? [].slice.call(dotsBox.querySelectorAll('button')) : [];
-    bgs = heroBg ? [].slice.call(heroBg.querySelectorAll('.hbg')) : [];
-  }
-  function show(n) {
-    if (!slides.length) return;
-    cur = (n + slides.length) % slides.length;
-    slides.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
-    bgs.forEach(function (b, i) { b.classList.toggle('on', i === cur); });
-    dots.forEach(function (d, i) { d.classList.toggle('on', i === cur); });
-  }
-  function auto() { if (reduce || slides.length < 2) return; clearInterval(timer); timer = setInterval(function () { show(cur + 1); }, 5000); }
-  function bindDots() { dots.forEach(function (d) { d.onclick = function () { show(+d.dataset.i); auto(); }; }); }
-
-  function buildHero(items) {
-    if (!carousel || !items.length) return;
-    carousel.innerHTML = items.map(function (it, i) {
-      return '<div class="hero-slide' + (i === 0 ? ' on' : '') + '"><a href="' + it.url + '" target="_blank" rel="noopener" style="color:#fff"><h1>' + esc(it.titre) + '</h1></a><span class="src"><span class="tag">' + esc(it.source) + '</span> ' + esc(it.time) + '</span></div>';
-    }).join('');
-    if (heroBg) heroBg.innerHTML = items.map(function (it, i) { return '<div class="hbg' + (i === 0 ? ' on' : '') + '"' + (it.image ? ' style="background-image:url(\'' + it.image + '\')"' : '') + '></div>'; }).join('');
-    dotsBox.innerHTML = items.map(function (it, i) { return '<button' + (i === 0 ? ' class="on"' : '') + ' data-i="' + i + '"></button>'; }).join('');
-    if (dmLabel && items[0]) dmLabel.textContent = 'Dernière minute · ' + items[0].datetime;
-    cur = 0; collect(); bindDots(); auto();
-  }
   function buildWall(items) {
     if (!track || !items.length) return;
     var one = items.map(function (it) {
@@ -90,8 +60,6 @@
     track.innerHTML = one + one;
   }
 
-  // Initialisation : les slides sont rendus cote serveur, on branche la rotation.
-  collect(); bindDots(); auto();
   if (track && track.children.length) { track.innerHTML = track.innerHTML + track.innerHTML; }
 
   // ---- Mur de la presse : defilement auto (rAF) + fleches gauche/droite ----
@@ -141,7 +109,7 @@
   // Rafraichissement en direct toutes les 45 s.
   function poll() {
     fetch('/api/latest/').then(function (r) { return r.json(); }).then(function (d) {
-      if (d.items && d.items.length) { buildHero(d.items); buildWall(d.items); }
+      if (d.items && d.items.length) { buildWall(d.items); }
     }).catch(function () {});
   }
   if (carousel || track) { setInterval(poll, 30000); }
@@ -330,7 +298,7 @@
     var t = document.createElement('div'); t.className = 'msg bot typing'; t.innerHTML = '<span></span><span></span><span></span>';
     cbody.appendChild(t); cbody.scrollTop = cbody.scrollHeight;
     fetch('/assistant/ask/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q, historique: prev }) })
-      .then(function (r) { return r.json(); }).then(function (data) { t.remove(); var el = addMessage(data.texte || '', 'bot'); renderSources(el, data); })
+      .then(function (r) { return r.json(); }).then(function (data) { t.remove(); addMessage(data.texte || '', 'bot'); })
       .catch(function () { t.remove(); addMessage('Une erreur est survenue. Reessayez.', 'bot'); });
   }
   document.querySelectorAll('.chip').forEach(function (c) { c.onclick = function () { ask(c.textContent.trim()); }; });

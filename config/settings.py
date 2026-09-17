@@ -224,6 +224,12 @@ PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # lien valable 24 h
 ADMIN_EMAIL = (os.environ.get('ADMIN_EMAIL', '') or EMAIL_HOST_USER
                or 'xamsamedia@gmail.com')
 
+# --- Connexion avec Google (OAuth2) ---
+# Cle a creer sur https://console.cloud.google.com (Identifiants OAuth 2.0).
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')
+GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET', '')
+GOOGLE_OAUTH_ACTIF = bool(GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET)
+
 # --- Journalisation : afficher les erreurs (500) dans la console (logs Render) ---
 LOGGING = {
     'version': 1,

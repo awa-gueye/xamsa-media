@@ -4,7 +4,9 @@ import re
 
 
 def notifications(request):
-    ctx = {'notifs_non_lues': 0, 'moderation_en_attente': 0}
+    from django.conf import settings
+    ctx = {'notifs_non_lues': 0, 'moderation_en_attente': 0,
+           'google_active': getattr(settings, 'GOOGLE_OAUTH_ACTIF', False)}
     if request.user.is_authenticated:
         ctx['notifs_non_lues'] = request.user.notifications.filter(lu=False).count()
         if request.user.is_superuser:

@@ -7,6 +7,8 @@ urlpatterns = [
     path('inscription/', views.inscription, name='inscription'),
     path('inscription/verification/', views.verifier_email, name='verifier_email'),
     path('connexion/', views.connexion, name='connexion'),
+    path('connexion/google/', views.google_login, name='google_login'),
+    path('connexion/google/callback/', views.google_callback, name='google_callback'),
     path('deconnexion/', views.deconnexion, name='deconnexion'),
 
     # Reinitialisation du mot de passe (vues Django, templates maison).
