@@ -112,7 +112,7 @@
       if (d.items && d.items.length) { buildWall(d.items); }
     }).catch(function () {});
   }
-  if (carousel || track) { setInterval(poll, 30000); }
+  if (track) { setInterval(poll, 30000); }
 
   // ---- Editeur de texte enrichi (page Publier) ----
   (function () {
