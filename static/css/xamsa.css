@@ -981,3 +981,9 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .cc-item img{width:22px;height:16px;object-fit:cover;border-radius:2px;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
 .cc-item .cc-name{flex:1;font-size:.92rem}
 .cc-item .cc-dial{color:var(--muted);font-size:.85rem}
+
+/* ---- Bibliothèque (admin) : actions par document ---- */
+.biblio-actions{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin-top:.7rem}
+.biblio-actions a{display:inline-flex;align-items:center;gap:.3rem;font-size:.82rem;font-weight:600;color:var(--green,#1f7a4d)}
+.biblio-actions a:hover{text-decoration:underline}
+.biblio-actions .icon{width:14px;height:14px}

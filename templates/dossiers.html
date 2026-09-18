@@ -10,6 +10,7 @@
   <div class="subtabs">
     <a href="{% url 'dossiers' %}" class="active">Tous les dossiers</a>
     <a href="{% url 'audio_video' %}">Audio &amp; Vidéo</a>
+    {% if user.is_superuser %}<a href="{% url 'bibliotheque' %}">Bibliothèque</a>{% endif %}
   </div>
   <div class="sec-head reveal"><div><span class="eyebrow">Nos enquêtes</span><h2>Le fonds propre de Xamsa</h2></div></div>
   <div class="cardgrid">

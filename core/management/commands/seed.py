@@ -24,12 +24,8 @@ CATEGORIES = ['Investigation', 'Économie', 'Politique', 'Environnement',
               'Science & Tech', 'Santé', 'Culture & Religion', 'Sport']
 
 SOURCES = [
-    ('SeneNews', 'https://www.senenews.com/feed', 'Web', 'https://www.senenews.com'),
     ('Sénégal7', 'https://senegal7.com/feed/', 'Web', 'https://senegal7.com'),
     ('aDakar', 'http://news.adakar.com/xml/all.xml', 'Agrégateur', 'http://www.adakar.com'),
-    ('Google Actu Sénégal',
-     'https://news.google.com/rss/search?q=S%C3%A9n%C3%A9gal&hl=fr&gl=SN&ceid=SN:fr',
-     'Agrégateur', 'https://news.google.com'),
     ('AllAfrica Sénégal',
      'https://fr.allafrica.com/tools/headlines/rdf/senegal/headlines.rdf',
      'Panafricain', 'https://fr.allafrica.com'),

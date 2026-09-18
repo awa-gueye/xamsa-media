@@ -10,6 +10,7 @@
   <div class="subtabs">
     <a href="{% url 'dossiers' %}">Tous les dossiers</a>
     <a href="{% url 'audio_video' %}" class="active">Audio &amp; Vidéo</a>
+    {% if user.is_superuser %}<a href="{% url 'bibliotheque' %}">Bibliothèque</a>{% endif %}
   </div>
   <div class="sec-head reveal"><div><span class="eyebrow">Documentaires</span><h2>Grands formats vidéo</h2></div></div>
   <div class="avgrid">

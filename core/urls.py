@@ -15,6 +15,7 @@ urlpatterns = [
     path('rubriques/medias-senegal/<slug:type_slug>/', views.medias_senegal, name='medias_senegal_type'),
     path('dossiers/', views.dossiers, name='dossiers'),
     path('dossiers/audio-video/', views.audio_video, name='audio_video'),
+    path('dossiers/bibliotheque/', views.bibliotheque, name='bibliotheque'),
     path('academie/', views.academie, name='academie'),
     path('academie/<slug:type_slug>/', views.academie, name='academie_type'),
     path('communaute/', views.communaute, name='communaute'),

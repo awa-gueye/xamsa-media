@@ -87,6 +87,26 @@ def dossiers(request):
         'contrib_titre': 'Enquêtes et dossiers de la communauté'})
 
 
+def bibliotheque(request):
+    """Bibliothèque des productions de Xamsa Média. Réservée à l'administrateur :
+    pour un utilisateur non-admin, la page n'existe pas (404), elle est donc
+    totalement invisible. L'admin ajoute une production via le formulaire de la
+    page (upload de fichier), sans passer par l'admin Django."""
+    from django.contrib import messages
+    from django.http import Http404
+    if not request.user.is_superuser:
+        raise Http404()
+    from multimedia.models import Bibliotheque
+    from multimedia.forms import BibliothequeForm
+    form = BibliothequeForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, "Production ajoutée à la bibliothèque.")
+        return redirect('bibliotheque')
+    return render(request, 'bibliotheque.html',
+                  {'items': Bibliotheque.objects.all(), 'form': form})
+
+
 def audio_video(request):
     return render(request, 'audio_video.html', {
         'docs': Media.objects.filter(publie=True, type='documentaire'),

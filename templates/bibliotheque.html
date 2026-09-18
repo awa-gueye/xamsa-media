@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Bibliothèque &middot; Xamsa Média{% endblock %}
+{% block nav_dos %}active{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap reveal">
+  <span class="eyebrow">Espace administrateur</span><h1>Bibliothèque</h1>
+  <p class="dek">L'ensemble des productions de Xamsa Média : documentaires, enquêtes, documents, vidéos, audios… Visible uniquement par l'administration.</p>
+</div></section>
+<section class="block" style="padding-top:0"><div class="wrap">
+  <div class="subtabs">
+    <a href="{% url 'dossiers' %}">Tous les dossiers</a>
+    <a href="{% url 'audio_video' %}">Audio &amp; Vidéo</a>
+    <a href="{% url 'bibliotheque' %}" class="active">Bibliothèque</a>
+  </div>
+
+  <div class="sec-head reveal">
+    <div><span class="eyebrow">{{ items|length }} production{{ items|length|pluralize }}</span><h2>Le fonds documentaire</h2></div>
+  </div>
+
+  <details class="biblio-add reveal" {% if form.errors %}open{% endif %}>
+    <summary><span class="btn btn-green btnsm">Ajouter une production <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+    <form method="post" enctype="multipart/form-data" class="pub-form biblio-form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="errmsg errbox">{{ form.non_field_errors.0 }}</div>{% endif %}
+      <div class="grid2">
+        <div class="field"><label>Type</label>{{ form.type }}</div>
+        <div class="field"><label>Titre</label>{{ form.titre }}{% if form.titre.errors %}<div class="errmsg">{{ form.titre.errors.0 }}</div>{% endif %}</div>
+      </div>
+      <div class="field"><label>Description <span class="opt">(optionnel)</span></label>{{ form.description }}</div>
+      <div class="grid2">
+        <div class="field"><label>Vignette <span class="opt">(image, optionnel)</span></label>{{ form.image }}</div>
+        <div class="field"><label>Fichier <span class="opt">(PDF, vidéo, audio, doc…)</span></label>{{ form.fichier }}</div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Lien externe <span class="opt">(optionnel)</span></label>{{ form.lien }}</div>
+        <div class="field"><label>Vidéo YouTube <span class="opt">(optionnel)</span></label>{{ form.video_url }}</div>
+      </div>
+      <small class="hint">Ajoutez au moins un fichier, un lien ou une vidéo.</small>
+      <button class="btn btn-green btn-block" type="submit" style="margin-top:.8rem">Enregistrer dans la bibliothèque <svg class="icon" viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></button>
+    </form>
+  </details>
+
+  <div class="cardgrid">
+    {% for it in items %}
+    <div class="acard reveal biblio-card">
+      <div class="thumb">
+        {% if it.visuel %}<img src="{{ it.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+        <span class="badge clay">{{ it.get_type_display }}</span>
+      </div>
+      <div class="body">
+        <h3>{{ it.titre }}</h3>
+        {% if it.description %}<p>{{ it.description|truncatewords:22 }}</p>{% endif %}
+        <span class="meta">{{ it.date|date:"d/m/Y" }}</span>
+        <div class="biblio-actions">
+          {% if it.fichier %}<a href="{{ it.fichier.url }}" target="_blank" rel="noopener">Ouvrir le fichier <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg></a>{% endif %}
+          {% if it.video_embed %}<a href="{{ it.video_url }}" target="_blank" rel="noopener">Voir la vidéo <svg class="icon" viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg></a>{% endif %}
+          {% if it.lien %}<a href="{{ it.lien }}" target="_blank" rel="noopener">Lien externe <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></a>{% endif %}
+          <a href="{% url 'admin:multimedia_bibliotheque_change' it.pk %}">Modifier</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    {% include 'partials/bientot.html' with message="La bibliothèque est vide. Cliquez sur « Ajouter » pour y déposer vos premières productions (documentaires, enquêtes, documents, vidéos…)." %}
+    {% endfor %}
+  </div>
+</div></section>
+{% endblock %}
