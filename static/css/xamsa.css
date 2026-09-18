@@ -965,3 +965,19 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .btn-google:hover{background:#f7f7f4;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .auth-sep{display:flex;align-items:center;gap:.8rem;color:var(--muted,#5b5b52);margin:1.1rem 0;font-size:.82rem}
 .auth-sep::before,.auth-sep::after{content:"";flex:1;height:1px;background:var(--line,#e6e6e0)}
+
+/* ---- Sélecteur d'indicatif téléphonique avec vrais drapeaux (custom) ---- */
+.tel-group .cc{position:relative;flex:0 0 auto;align-self:stretch}
+.cc-btn{display:flex;align-items:center;gap:.45rem;height:100%;min-height:46px;width:118px;padding:.5rem .6rem;border:1px solid var(--line);border-radius:12px;background:var(--paper,#fff);color:var(--ink);cursor:pointer;font:inherit;line-height:1}
+.cc-btn:hover{border-color:var(--green,#1f7a4d)}
+.cc-flag{width:22px;height:16px;object-fit:cover;border-radius:2px;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.cc-code{font-weight:600;font-size:.95rem}
+.cc-btn .chev{margin-left:auto;width:15px;height:15px;opacity:.55;flex:none}
+.cc-panel{position:absolute;top:calc(100% + 6px);left:0;z-index:60;width:300px;max-width:80vw;background:var(--card,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 45px rgba(0,0,0,.22);overflow:hidden}
+.cc-search{width:100%;border:0;border-bottom:1px solid var(--line);padding:.75rem .95rem;font:inherit;background:transparent;color:var(--ink);outline:none}
+.cc-list{list-style:none;margin:0;padding:.3rem;max-height:260px;overflow-y:auto}
+.cc-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .55rem;border-radius:8px;cursor:pointer}
+.cc-item:hover,.cc-item:focus{background:var(--soft,#f4f4ef);outline:none}
+.cc-item img{width:22px;height:16px;object-fit:cover;border-radius:2px;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.cc-item .cc-name{flex:1;font-size:.92rem}
+.cc-item .cc-dial{color:var(--muted);font-size:.85rem}

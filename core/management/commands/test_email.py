@@ -43,7 +43,7 @@ class Command(BaseCommand):
         self.stdout.write("\nEnvoi d'un test a : {} ...".format(dest))
         try:
             n = send_mail(
-                "Xamsa Média — test de configuration email",
+                "Xamsa Média - test de configuration email",
                 "Cet email confirme que l'envoi fonctionne. "
                 "Si vous le recevez, la reinitialisation de mot de passe fonctionnera aussi.",
                 settings.DEFAULT_FROM_EMAIL, [dest], fail_silently=False)

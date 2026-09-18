@@ -329,13 +329,13 @@ def publier(request):
             auteur = request.user.get_full_name() or request.user.username
             lien = request.build_absolute_uri(reverse('moderation'))
             _notifier_email(
-                "Nouvelle contribution à valider — Xamsa Média",
+                "Nouvelle contribution à valider - Xamsa Média",
                 ("Une nouvelle contribution attend votre validation :\n\n"
                  "Titre : {}\nType : {}\nDestination : {}\nAuteur : {}\n\n"
                  "Ouvrez la modération pour la traiter :\n{}\n\n"
                  "L'équipe Xamsa Média").format(
                     contrib.titre, contrib.get_type_display(),
-                    contrib.get_destination_display() or '—', auteur, lien),
+                    contrib.get_destination_display() or '-', auteur, lien),
                 [settings.ADMIN_EMAIL])
         return redirect('compte')
     return render(request, 'comptes/publier.html', {'form': form, 'ptype': ptype, 'profil': profil})
@@ -405,7 +405,7 @@ def commenter(request, pk):
             qui = request.user.get_full_name() or request.user.username
             lien = request.build_absolute_uri(pub.get_absolute_url() + '#commentaires')
             _notifier_email(
-                "Nouveau commentaire sur votre publication — Xamsa Média",
+                "Nouveau commentaire sur votre publication - Xamsa Média",
                 ("Bonjour {},\n\n{} a commenté votre publication « {} » :\n\n"
                  "« {} »\n\nLisez le commentaire et répondez ici :\n{}\n\n"
                  "L'équipe Xamsa Média").format(

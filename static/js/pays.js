@@ -56,35 +56,72 @@
     ['Zimbabwe','ZW','263']
   ];
 
-  function drapeau(iso) {
-    return iso.replace(/./g, function (c) { return String.fromCodePoint(127397 + c.charCodeAt(0)); });
-  }
+  // Vraie image de drapeau (rendue partout, y compris Windows, contrairement aux
+  // emojis drapeaux qui n'y apparaissent pas).
+  function flagUrl(iso) { return 'https://flagcdn.com/24x18/' + iso.toLowerCase() + '.png'; }
 
-  var sel = document.getElementById('telPays');
+  var sel = document.getElementById('telPays');   // <select> d'origine (remplace)
   var num = document.getElementById('telNumero');
   var cache = document.getElementById('telephone');
-  if (!sel || !num || !cache) return;
+  if (!num || !cache) return;
 
-  // Senegal en tete, puis le reste par ordre alphabetique (nom francais).
+  // Senegal en tete + par defaut, puis le reste par ordre alphabetique.
   var reste = PAYS.filter(function (p) { return p[1] !== 'SN'; })
                   .sort(function (a, b) { return a[0].localeCompare(b[0], 'fr'); });
   var ordonne = PAYS.filter(function (p) { return p[1] === 'SN'; }).concat(reste);
+  var current = ordonne[0];   // Senegal
+
+  var CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
+
+  // --- Construction du selecteur personnalise (drapeau + indicatif) ---
+  var wrap = document.createElement('div'); wrap.className = 'cc';
+  var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cc-btn';
+  btn.setAttribute('aria-label', 'Indicatif du pays');
+  var panel = document.createElement('div'); panel.className = 'cc-panel'; panel.hidden = true;
+  var search = document.createElement('input'); search.type = 'text';
+  search.className = 'cc-search'; search.placeholder = 'Rechercher un pays...';
+  var list = document.createElement('ul'); list.className = 'cc-list';
+
+  function renderBtn() {
+    btn.innerHTML = '<img class="cc-flag" src="' + flagUrl(current[1]) + '" alt="" '
+      + 'onerror="this.style.display=\'none\'"><span class="cc-code">+' + current[2] + '</span>' + CHEV;
+  }
 
   ordonne.forEach(function (p) {
-    var o = document.createElement('option');
-    o.value = '+' + p[2];
-    o.textContent = drapeau(p[1]) + '  ' + p[0] + ' (+' + p[2] + ')';
-    if (p[1] === 'SN') o.selected = true;
-    sel.appendChild(o);
+    var li = document.createElement('li'); li.className = 'cc-item'; li.tabIndex = 0;
+    li.innerHTML = '<img src="' + flagUrl(p[1]) + '" alt="" loading="lazy" '
+      + 'onerror="this.style.visibility=\'hidden\'"><span class="cc-name">' + p[0]
+      + '</span><span class="cc-dial">+' + p[2] + '</span>';
+    function choisir() { current = p; renderBtn(); fermer(); maj(); }
+    li.addEventListener('click', choisir);
+    li.addEventListener('keydown', function (e) { if (e.key === 'Enter') choisir(); });
+    list.appendChild(li);
   });
+
+  panel.appendChild(search); panel.appendChild(list);
+  wrap.appendChild(btn); wrap.appendChild(panel);
+  if (sel) { sel.parentNode.insertBefore(wrap, sel); sel.remove(); }
+  else { num.parentNode.insertBefore(wrap, num); }
+  renderBtn();
+
+  function ouvrir() { panel.hidden = false; search.value = ''; filtrer(''); search.focus(); }
+  function fermer() { panel.hidden = true; }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); panel.hidden ? ouvrir() : fermer(); });
+  document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) fermer(); });
+  function filtrer(q) {
+    q = q.toLowerCase().trim();
+    [].forEach.call(list.children, function (li) {
+      li.style.display = (!q || li.textContent.toLowerCase().indexOf(q) >= 0) ? '' : 'none';
+    });
+  }
+  search.addEventListener('input', function () { filtrer(search.value); });
 
   function maj() {
     var n = num.value.replace(/\s+/g, ' ').trim();
-    cache.value = n ? (sel.value + ' ' + n) : '';
+    cache.value = n ? ('+' + current[2] + ' ' + n) : '';
   }
-  sel.addEventListener('change', maj);
   num.addEventListener('input', maj);
-  var form = sel.closest('form');
+  var form = num.closest('form');
   if (form) form.addEventListener('submit', maj);
   maj();
 })();

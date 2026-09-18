@@ -95,7 +95,7 @@ class Contribution(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        return '{} — {}'.format(self.get_type_display(), self.titre)
+        return '{} - {}'.format(self.get_type_display(), self.titre)
 
     @property
     def corps_html(self):

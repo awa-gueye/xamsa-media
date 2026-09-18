@@ -81,8 +81,6 @@ MEDIAS_SENEGAL = [
     # Medias numeriques
     ('Seneweb', 'numerique', "Portail d'information généraliste, l'un des sites les plus "
      "consultés du Sénégal.", 'Pure player', 'https://www.seneweb.com', 'tech'),
-    ('SeneNews', 'numerique', "Site d'actualité généraliste.",
-     'Pure player', 'https://www.senenews.com', 'tech'),
     ('Dakaractu', 'numerique', "Site d'information en continu.",
      'Pure player', 'https://www.dakaractu.com', 'tech'),
     ('PressAfrik', 'numerique', "Site d'information indépendant.",
