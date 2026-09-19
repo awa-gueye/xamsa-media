@@ -987,3 +987,10 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .biblio-actions a{display:inline-flex;align-items:center;gap:.3rem;font-size:.82rem;font-weight:600;color:var(--green,#1f7a4d)}
 .biblio-actions a:hover{text-decoration:underline}
 .biblio-actions .icon{width:14px;height:14px}
+
+/* ---- Bibliothèque : formulaire d'ajout repliable ---- */
+.biblio-add{margin:0 0 1.6rem}
+.biblio-add summary{list-style:none;cursor:pointer;display:inline-block}
+.biblio-add summary::-webkit-details-marker{display:none}
+.biblio-add[open] summary{margin-bottom:1rem}
+.biblio-form{max-width:820px;background:var(--card,#fff);border:1px solid var(--line,#e6e6e0);border-radius:16px;padding:1.4rem 1.5rem}
