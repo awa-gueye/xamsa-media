@@ -22,6 +22,14 @@ class BibliothequeForm(forms.ModelForm):
             if not isinstance(f.widget, forms.ClearableFileInput):
                 f.widget.attrs.setdefault('class', 'inp')
 
+    def clean_image(self):
+        from core.validators import valider_image
+        return valider_image(self.cleaned_data.get('image'))
+
+    def clean_fichier(self):
+        from core.validators import valider_fichier
+        return valider_fichier(self.cleaned_data.get('fichier'))
+
     def clean(self):
         c = super().clean()
         # Au moins un contenu : fichier, lien ou vidéo (sinon la fiche est vide).

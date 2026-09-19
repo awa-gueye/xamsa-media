@@ -297,7 +297,8 @@
     addMessage(q, 'me');
     var t = document.createElement('div'); t.className = 'msg bot typing'; t.innerHTML = '<span></span><span></span><span></span>';
     cbody.appendChild(t); cbody.scrollTop = cbody.scrollHeight;
-    fetch('/assistant/ask/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q, historique: prev }) })
+    var _tok = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+    fetch('/assistant/ask/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': _tok }, body: JSON.stringify({ question: q, historique: prev }) })
       .then(function (r) { return r.json(); }).then(function (data) { t.remove(); addMessage(data.texte || '', 'bot'); })
       .catch(function () { t.remove(); addMessage('Une erreur est survenue. Reessayez.', 'bot'); });
   }

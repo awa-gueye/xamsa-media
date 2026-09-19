@@ -47,6 +47,10 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # WhiteNoise sert les fichiers statiques directement (pas besoin de CDN).
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    # Sécurité applicative : limitation de débit + en-têtes (après WhiteNoise
+    # pour ne pas limiter les fichiers statiques).
+    'core.security.RateLimitMiddleware',
+    'core.security.SecurityHeadersMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -135,18 +139,41 @@ if CLOUDINARY_URL:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- Securite : limitation de debit (anti-brute-force / anti-scraping) ---
+# Desactivable en cas de besoin via DJANGO_RATELIMIT=0.
+SECURITY_RATELIMIT = os.environ.get('DJANGO_RATELIMIT', '1') == '1'
+
+# En-tetes et cookies durcis (valables aussi en dev, sans casser le local).
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SESSION_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_HTTPONLY reste False (defaut Django) : le JS doit lire le jeton
+# csrftoken pour l'envoyer via X-CSRFToken (chatbot, likes...). Le passer a True
+# casserait ces appels sans bénéfice de sécurité réel.
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+# Limite la taille des donnees postees / fichiers en memoire (anti-abus).
+DATA_UPLOAD_MAX_MEMORY_SIZE = 15 * 1024 * 1024      # 15 Mo pour les champs
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
 # --- Securite en production (actif seulement quand DEBUG=0) ---
 if not DEBUG:
-    # Fly.io / proxy termine le TLS et transmet X-Forwarded-Proto.
+    # Fly.io / Render / Cloudflare terminent le TLS et transmettent X-Forwarded-Proto.
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SSL_REDIRECT', '1') == '1'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30
+    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365   # 1 an (eligible au preload HSTS)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    # Avertit si la cle secrete n'a pas ete definie (ne jamais laisser la valeur dev).
+    if SECRET_KEY == 'dev-a-changer-en-production':
+        import logging as _lg
+        _lg.getLogger('django').error(
+            "DJANGO_SECRET_KEY non definie en production : definissez-la absolument.")
 
 # --- Assistant "Looy laaj ?" (chatbot IA + RAG) ---------------------------
 # Fournisseur LLM : 'gemini' par defaut (niveau gratuit Google AI Studio).

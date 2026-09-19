@@ -9,15 +9,14 @@ et sources citees uniquement quand c'est necessaire. Toute la logique est dans
 import json
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .engine import repondre
 
 
-@csrf_exempt  # Prototype. En production : gerer le jeton CSRF cote client.
 @require_POST
 def ask(request):
+    # Protégé par CSRF (le front envoie le jeton via l'en-tête X-CSRFToken).
     try:
         data = json.loads(request.body or '{}')
     except json.JSONDecodeError:

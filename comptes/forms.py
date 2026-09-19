@@ -123,3 +123,11 @@ class ContributionForm(forms.ModelForm):
         """Assainit le HTML de l'editeur enrichi (anti-XSS) avant enregistrement."""
         from .sanitize import nettoyer_html
         return nettoyer_html(self.cleaned_data.get('corps', ''))
+
+    def clean_image(self):
+        from core.validators import valider_image
+        return valider_image(self.cleaned_data.get('image'))
+
+    def clean_fichier(self):
+        from core.validators import valider_fichier
+        return valider_fichier(self.cleaned_data.get('fichier'))

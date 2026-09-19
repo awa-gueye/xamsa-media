@@ -204,6 +204,25 @@ def newsletter(request):
     return redirect(suivant)
 
 
+def robots_txt(request):
+    """robots.txt : écarte les robots des zones sensibles et limite le rythme."""
+    from django.http import HttpResponse
+    lignes = [
+        'User-agent: *',
+        'Disallow: /admin/',
+        'Disallow: /mon-compte/',
+        'Disallow: /moderation/',
+        'Disallow: /assistant/',
+        'Disallow: /connexion/',
+        'Disallow: /inscription/',
+        'Disallow: /reinitialiser/',
+        'Disallow: /mot-de-passe/',
+        'Disallow: /dossiers/bibliotheque/',
+        'Crawl-delay: 5',
+    ]
+    return HttpResponse('\n'.join(lignes) + '\n', content_type='text/plain')
+
+
 def service_worker(request):
     """Service worker servi a la racine (/sw.js) pour couvrir tout le site (PWA)."""
     resp = render(request, 'sw.js', content_type='application/javascript')
