@@ -58,7 +58,7 @@ MEDIASN_DEMO = [
 ]
 # URLs exactes des items de revue fictifs (les vrais ont des URL d'articles completes).
 REVUE_DEMO_URLS = [
-    'https://www.senenews.com', 'https://senegal7.com', 'http://www.adakar.com',
+    'https://senegal7.com', 'http://www.adakar.com',
     'https://fr.allafrica.com', 'https://www.rfi.fr', 'https://www.france24.com',
 ]
 

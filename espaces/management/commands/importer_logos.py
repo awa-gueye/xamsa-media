@@ -42,7 +42,6 @@ MAPPING = {
     'Le Quotidien': 'lequotidien',
     'EnQuête': 'enquete',
     'Seneweb': 'seneweb',
-    'SeneNews': 'senenews',
     'Dakaractu': 'dakaractu',
     'PressAfrik': 'pressafrik',
     'Senego': 'senego',

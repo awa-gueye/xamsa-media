@@ -71,39 +71,6 @@
 </section>
 {% endif %}
 
-<section class="block" id="revue">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div><span class="eyebrow">Revue de presse du jour</span><h2>La titraille, décryptée</h2>
-        <p class="lead">L'analyse critique des unes sénégalaises, africaines et internationales.</p></div>
-      <a class="more" href="{% url 'dossiers' %}">Toute la revue <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    </div>
-    <div class="revgrid">
-      {% for it in revue %}
-      <article class="rev reveal">
-        <div class="thumb">{% if it.image_url %}<img src="{{ it.image_url }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
-        <div class="body">
-          <div class="src"><span class="name">{{ it.source.nom }}</span><span class="time">{{ it.date|date:"H:i" }}</span></div>
-          <p class="analysis">{{ it.resume_propre|default:it.titre_propre|truncatewords:26 }}</p>
-          <div class="rev-foot">
-            <a class="link" href="{{ it.url }}" target="_blank" rel="noopener">Lire la source <svg class="icon" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
-            <span class="rev-share">
-              <a class="share-mini" target="_blank" rel="noopener" aria-label="Partager sur WhatsApp"
-                 href="https://wa.me/?text={{ it.titre_propre|urlencode }}%20{{ it.url|urlencode }}">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3Z"/><path d="M8.5 8.5c0 4 3 7 6.5 7 1-1 1-1.5.5-2l-1.6-1c-.4-.2-.6 0-.9.3s-.6.5-1 .3c-1-.5-2-1.5-2.5-2.5-.2-.4 0-.7.3-1s.5-.5.3-.9l-1-1.6c-.5-.5-1-.5-2 .5Z" fill="currentColor" stroke="none"/></svg>
-              </a>
-              <button class="share-mini share-copy" type="button" data-url="{{ it.url }}" aria-label="Copier le lien">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>
-              </button>
-            </span>
-          </div>
-        </div>
-      </article>
-      {% empty %}<p class="lead">La revue se remplit avec l'ingestion RSS.</p>{% endfor %}
-    </div>
-  </div>
-</section>
-
 {% if brief %}
 <section class="block" style="padding-top:0"><div class="wrap">
   <div class="brief-card reveal">

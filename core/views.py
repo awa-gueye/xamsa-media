@@ -41,7 +41,6 @@ def home(request):
     from veille.models import Brief
     return render(request, 'home.html', {
         'une_pub': _une_publication(),
-        'revue': RevueItem.objects.select_related('source').order_by('-date')[:3],
         'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
         'mur': RevueItem.objects.select_related('source').order_by('-date')[:14],
         'brief': Brief.objects.first(),
