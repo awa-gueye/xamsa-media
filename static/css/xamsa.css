@@ -994,3 +994,7 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .biblio-add summary::-webkit-details-marker{display:none}
 .biblio-add[open] summary{margin-bottom:1rem}
 .biblio-form{max-width:820px;background:var(--card,#fff);border:1px solid var(--line,#e6e6e0);border-radius:16px;padding:1.4rem 1.5rem}
+
+/* ---- Mur de la presse : accent sur les publications de Xamsa Média ---- */
+.presswall .une.une-xamsa{box-shadow:inset 3px 0 0 var(--green,#1f7a4d)}
+.presswall .une.une-xamsa .src{color:var(--green,#1f7a4d);font-weight:700}

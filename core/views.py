@@ -37,12 +37,34 @@ def _une_publication():
             or Article.objects.filter(publie=True).order_by('-date_publication').first())
 
 
+def _mur_items(limite=16):
+    """Éléments du « mur de la presse » : publications de Xamsa Média + revue de
+    presse externe, DIVERSIFIÉE (2 items max par source) pour qu'aucun site ne
+    domine. Uniquement les sources de la liste blanche (déjà en base)."""
+    xamsa = [{'titre': a.titre, 'url': a.get_absolute_url(), 'image': a.visuel or '',
+              'source': 'Xamsa Média', 'date': a.date_publication, 'externe': False}
+             for a in Article.objects.filter(publie=True).order_by('-date_publication')[:4]]
+
+    externes, par_source = [], {}
+    for it in RevueItem.objects.select_related('source').order_by('-date')[:150]:
+        nom = it.source.nom
+        if par_source.get(nom, 0) >= 2:          # 2 items max par source
+            continue
+        par_source[nom] = par_source.get(nom, 0) + 1
+        externes.append({'titre': it.titre_propre, 'url': it.url, 'image': it.image_url or '',
+                         'source': nom, 'date': it.date, 'externe': True})
+
+    items = xamsa + externes[:max(0, limite - len(xamsa))]
+    items.sort(key=lambda d: d['date'], reverse=True)
+    return items
+
+
 def home(request):
     from veille.models import Brief
     return render(request, 'home.html', {
         'une_pub': _une_publication(),
         'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
-        'mur': RevueItem.objects.select_related('source').order_by('-date')[:14],
+        'mur': _mur_items(),
         'brief': Brief.objects.first(),
     })
 
@@ -239,10 +261,10 @@ def hors_ligne(request):
 def latest_json(request):
     from django.http import JsonResponse
     items = []
-    for it in RevueItem.objects.select_related('source').order_by('-date')[:14]:
+    for d in _mur_items():
         items.append({
-            'titre': it.titre_propre, 'source': it.source.nom, 'url': it.url,
-            'time': it.date.strftime('%H:%M'), 'datetime': it.date.strftime('%d/%m %H:%M'),
-            'image': it.image_url or '',
+            'titre': d['titre'], 'source': d['source'], 'url': d['url'],
+            'time': d['date'].strftime('%H:%M'), 'datetime': d['date'].strftime('%d/%m %H:%M'),
+            'image': d['image'], 'externe': d['externe'],
         })
     return JsonResponse({'items': items})

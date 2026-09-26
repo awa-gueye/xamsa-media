@@ -55,7 +55,10 @@
   function buildWall(items) {
     if (!track || !items.length) return;
     var one = items.map(function (it) {
-      return '<a class="une" href="' + it.url + '" target="_blank" rel="noopener"><div class="thumb">' + (it.image ? '<img src="' + it.image + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</div><div class="body"><div class="src">' + esc(it.source) + '<span class="cat">' + esc(it.datetime) + '</span></div><div class="hl">' + esc(it.titre) + '</div></div></a>';
+      var ext = it.externe !== false;            // Xamsa Média (interne) : même onglet
+      var tgt = ext ? ' target="_blank" rel="noopener"' : '';
+      var cls = 'une' + (ext ? '' : ' une-xamsa');
+      return '<a class="' + cls + '" href="' + it.url + '"' + tgt + '><div class="thumb">' + (it.image ? '<img src="' + it.image + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</div><div class="body"><div class="src">' + esc(it.source) + '<span class="cat">' + esc(it.datetime) + '</span></div><div class="hl">' + esc(it.titre) + '</div></div></a>';
     }).join('');
     track.innerHTML = one + one;
   }
