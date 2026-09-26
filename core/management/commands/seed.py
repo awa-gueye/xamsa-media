@@ -23,16 +23,6 @@ from veille.models import Source
 CATEGORIES = ['Investigation', 'Économie', 'Politique', 'Environnement',
               'Science & Tech', 'Santé', 'Culture & Religion', 'Sport']
 
-SOURCES = [
-    ('Sénégal7', 'https://senegal7.com/feed/', 'Web', 'https://senegal7.com'),
-    ('aDakar', 'http://news.adakar.com/xml/all.xml', 'Agrégateur', 'http://www.adakar.com'),
-    ('AllAfrica Sénégal',
-     'https://fr.allafrica.com/tools/headlines/rdf/senegal/headlines.rdf',
-     'Panafricain', 'https://fr.allafrica.com'),
-    ('RFI Sénégal', 'https://www.rfi.fr/fr/tag/s%C3%A9n%C3%A9gal/rss', 'International', 'https://www.rfi.fr'),
-    ('France24 Sénégal', 'https://www.france24.com/fr/tag/s%C3%A9n%C3%A9gal/rss', 'International', 'https://www.france24.com'),
-]
-
 # Annuaire des medias senegalais reels. (titre, type, description, meta, lien, illustration)
 MEDIAS_SENEGAL = [
     # Chaines de television
@@ -108,12 +98,15 @@ class Command(BaseCommand):
     help = 'Insere les donnees structurelles reelles (categories, sources, annuaire medias).'
 
     def handle(self, *args, **options):
+        from django.core.management import call_command
+
         for nom in CATEGORIES:
             Categorie.objects.get_or_create(nom=nom)
 
-        for nom, rss, cat, site in SOURCES:
-            Source.objects.get_or_create(
-                nom=nom, defaults={'url_rss': rss, 'categorie': cat, 'site': site})
+        # Sources du mur de la presse : liste blanche UNIQUE (voir la commande
+        # sources_officielles). On délègue pour ne JAMAIS réintroduire un site
+        # hors de la liste demandée, et supprimer tout le reste.
+        call_command('sources_officielles', verbosity=0)
 
         for titre, typ, desc, meta, lien, illus in MEDIAS_SENEGAL:
             MediaSenegal.objects.get_or_create(
