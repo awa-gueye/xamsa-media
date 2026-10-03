@@ -65,6 +65,26 @@
 
   if (track && track.children.length) { track.innerHTML = track.innerHTML + track.innerHTML; }
 
+  // ---- Carrousel hero : 4 publications Xamsa, defilement auto (fondu) ----
+  (function () {
+    var car = document.getElementById('hlCarousel');
+    if (!car) return;
+    var slides = [].slice.call(car.querySelectorAll('.hl-slide'));
+    var dots = [].slice.call(document.querySelectorAll('#hlDots button'));
+    if (slides.length < 2) return;
+    var cur = 0, timer;
+    function show(n) {
+      cur = (n + slides.length) % slides.length;
+      slides.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+      dots.forEach(function (d, i) { d.classList.toggle('on', i === cur); });
+    }
+    function auto() { if (reduce) return; clearInterval(timer); timer = setInterval(function () { show(cur + 1); }, 5500); }
+    dots.forEach(function (d) {
+      d.addEventListener('click', function (e) { e.preventDefault(); show(+d.dataset.i); auto(); });
+    });
+    auto();
+  })();
+
   // ---- Mur de la presse : defilement auto (rAF) + fleches gauche/droite ----
   var marquee = document.querySelector('.marquee');
   var wallPaused = false, wallResumeTimer, wallLast = 0;

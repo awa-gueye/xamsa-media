@@ -27,14 +27,17 @@ MEDIA_TABS = [('histoire', 'Histoire des médias'), ('portrait', 'Portraits de j
               ('numerique', 'Médias numériques'), ('podcast', 'Podcasts')]
 
 
-def _une_publication():
-    """La toute derniere publication de Xamsa Media a mettre en avant sur l'accueil.
-
-    Priorite a une publication cochee « Dernière minute » par l'admin, sinon la
-    plus recente publiee. Uniquement du contenu Xamsa (aucune source externe)."""
-    return (Article.objects.filter(publie=True, derniere_minute=True)
-            .order_by('-date_publication').first()
-            or Article.objects.filter(publie=True).order_by('-date_publication').first())
+def _hero_publications(limite=4):
+    """Jusqu'à 4 publications Xamsa pour le carrousel d'accueil. L'admin choisit
+    en cochant « Dernière minute » sur les articles voulus ; on complète ensuite
+    avec les plus récentes si besoin."""
+    choisies = list(Article.objects.filter(publie=True, derniere_minute=True)
+                    .order_by('-date_publication')[:limite])
+    if len(choisies) < limite:
+        deja = [a.id for a in choisies]
+        choisies += list(Article.objects.filter(publie=True).exclude(id__in=deja)
+                         .order_by('-date_publication')[:limite - len(choisies)])
+    return choisies
 
 
 def _mur_items(limite=16):
@@ -61,11 +64,28 @@ def _mur_items(limite=16):
 
 def home(request):
     from veille.models import Brief
+    from django.templatetags.static import static
+
+    # Image de la DERNIÈRE publication de chaque section (sinon image par défaut).
+    der_actu = Article.objects.filter(publie=True).order_by('-date_publication').first()
+    der_aca = Ressource.objects.filter(publie=True).order_by('-date').first()
+    der_com = Contribution.objects.filter(statut='publie').order_by('-date').first()
+
+    sec_actu_img = der_actu.visuel if der_actu and der_actu.visuel else static('img/sections/actualites.jpg')
+    sec_aca_img = static('img/sections/academie.jpg')
+    if der_aca:
+        if der_aca.logo:
+            sec_aca_img = der_aca.logo.url
+        elif der_aca.image_url:
+            sec_aca_img = der_aca.image_url
+    sec_com_img = der_com.image.url if der_com and der_com.image else static('img/sections/communaute.jpg')
+
     return render(request, 'home.html', {
-        'une_pub': _une_publication(),
-        'enquetes': Article.objects.filter(publie=True, type='enquete')[:3],
+        'hero_pubs': _hero_publications(),
+        'enquetes': Article.objects.filter(publie=True, type='enquete').order_by('-date_publication')[:5],
         'mur': _mur_items(),
         'brief': Brief.objects.first(),
+        'sec_actu_img': sec_actu_img, 'sec_aca_img': sec_aca_img, 'sec_com_img': sec_com_img,
     })
 
 

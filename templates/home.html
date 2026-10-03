@@ -1,20 +1,30 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static xamsa_extras %}
 {% block title %}Xamsa Média, Accueil{% endblock %}
 {% block nav_home %}active{% endblock %}
 {% block content %}
 
 <section class="hero-latest"><div class="wrap">
-  {% if une_pub %}
-  <a class="hl-card" href="{{ une_pub.get_absolute_url }}">
-    {% if une_pub.visuel %}<div class="hl-media"><img src="{{ une_pub.visuel }}" alt="{{ une_pub.titre }}"></div>{% endif %}
-    <div class="hl-body">
-      <span class="hl-tag">{{ une_pub.categorie|default:une_pub.get_type_display }}</span>
-      <h1>{{ une_pub.titre }}</h1>
-      {% if une_pub.chapo %}<p>{{ une_pub.chapo|truncatewords:36 }}</p>{% endif %}
-      <span class="hl-more">Lire la publication <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </div>
-  </a>
+  {% if hero_pubs %}
+  <div class="hl-carousel" id="hlCarousel">
+    {% for a in hero_pubs %}
+    <a class="hl-card hl-slide{% if forloop.first %} on{% endif %}" href="{{ a.get_absolute_url }}">
+      {% if a.visuel %}<div class="hl-media"><img src="{{ a.visuel }}" alt="{{ a.titre }}"></div>{% endif %}
+      <div class="hl-body">
+        <span class="hl-tag">{{ a.categorie|default:a.get_type_display }}</span>
+        <h1>{{ a.titre }}</h1>
+        {% if a.chapo %}<p>{{ a.chapo|truncatewords:30 }}</p>{% endif %}
+        <span class="hl-meta">Publié {{ a.date_publication|publie_depuis }}</span>
+        <span class="hl-more">Lire la publication <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% if hero_pubs|length > 1 %}
+  <div class="hl-dots" id="hlDots">
+    {% for a in hero_pubs %}<button type="button" class="{% if forloop.first %}on{% endif %}" data-i="{{ forloop.counter0 }}" aria-label="Publication {{ forloop.counter }}"></button>{% endfor %}
+  </div>
+  {% endif %}
   {% else %}
   <div class="hl-empty">
     <h1>L'actualité du Sénégal, en direct.</h1>
@@ -56,13 +66,16 @@
         {% if a.visuel %}<img src="{{ a.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div>
         <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
         <h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:26 }}</p>{% endif %}
+        <span class="spot-meta">Publié {{ a.date_publication|publie_depuis }}</span>
       </a>
       <div class="spot-side">
         {% endif %}{% endfor %}
-        {% for a in enquetes %}{% if not forloop.first and forloop.counter <= 3 %}
-        <a class="tile {% if forloop.counter == 2 %}green{% else %}clay{% endif %}" href="{{ a.get_absolute_url }}">
-          <span class="ic"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-          <h3>{{ a.titre|truncatewords:8 }}</h3><p>{{ a.get_type_display }} &middot; {{ a.temps_lecture }} min</p>
+        {% for a in enquetes %}{% if not forloop.first %}
+        <a class="spot-sm reveal" href="{{ a.get_absolute_url }}">
+          {% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<div class="veil"></div>
+          <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
+          <h3>{{ a.titre|truncatewords:12 }}</h3>
+          <span class="spot-meta">Publié {{ a.date_publication|publie_depuis }}</span>
         </a>
         {% endif %}{% endfor %}
       </div>
@@ -87,19 +100,18 @@
 
 <section class="block">
   <div class="wrap">
-    <div class="sec-head reveal"><div><span class="eyebrow">Explorer</span><h2>Toutes les sections</h2>
-      <p class="lead">Chaque espace a sa propre matière.</p></div></div>
+    <div class="sec-head reveal"><div><span class="eyebrow">Explorer</span><h2>Toutes les sections</h2></div></div>
     <div class="cardgrid">
       <a class="acard reveal" href="{% url 'rubriques' %}">
-        <div class="thumb sec-thumb sec-actu"><img src="{% static 'img/sections/actualites.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Actualité</span></div>
+        <div class="thumb sec-thumb sec-actu"><img src="{{ sec_actu_img }}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Actualité</span></div>
         <div class="body"><h3>Actualité &amp; rubriques</h3><p>Les pôles éditoriaux et la rubrique spéciale Médias du Sénégal.</p><span class="meta">Explorer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
       </a>
       <a class="acard reveal" href="{% url 'academie' %}">
-        <div class="thumb sec-thumb sec-aca"><img src="{% static 'img/sections/academie.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge clay">Académie</span></div>
+        <div class="thumb sec-thumb sec-aca"><img src="{{ sec_aca_img }}" alt="" loading="lazy" onerror="this.remove()"><span class="badge clay">Académie</span></div>
         <div class="body"><h3>Académie</h3><p>Cours, formations, webinaires, ressources et certifications.</p><span class="meta">Se former <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
       </a>
       <a class="acard reveal" href="{% url 'communaute' %}">
-        <div class="thumb sec-thumb sec-com"><img src="{% static 'img/sections/communaute.jpg' %}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Communauté</span></div>
+        <div class="thumb sec-thumb sec-com"><img src="{{ sec_com_img }}" alt="" loading="lazy" onerror="this.remove()"><span class="badge pine">Communauté</span></div>
         <div class="body"><h3>Communauté</h3><p>Contributions, concours, associations de presse et opportunités.</p><span class="meta">Participer <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
       </a>
     </div>
