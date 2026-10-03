@@ -54,31 +54,23 @@
 </section>
 
 {% if enquetes %}
-<section class="block dark">
+<section class="block">
   <div class="wrap">
     <div class="sec-head reveal">
       <div><span class="eyebrow">Le fil d'enquêtes</span><h2>Les enquêtes de Xamsa</h2></div>
       <a class="more" href="{% url 'dossiers' %}">Toutes les enquêtes <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
-    <div class="spotlight">
-      {% for a in enquetes %}{% if forloop.first %}
-      <a class="spot-main reveal" href="{{ a.get_absolute_url }}">
-        {% if a.visuel %}<img src="{{ a.visuel }}" alt="" onerror="this.remove()">{% endif %}<div class="veil"></div>
-        <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
-        <h3>{{ a.titre }}</h3>{% if a.chapo %}<p>{{ a.chapo|truncatewords:26 }}</p>{% endif %}
-        <span class="spot-meta">Publié {{ a.date_publication|publie_depuis }}</span>
-      </a>
-      <div class="spot-side">
-        {% endif %}{% endfor %}
-        {% for a in enquetes %}{% if not forloop.first %}
-        <a class="spot-sm reveal" href="{{ a.get_absolute_url }}">
-          {% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<div class="veil"></div>
+    <div class="enq-grid">
+      {% for a in enquetes %}
+      <a class="enq-card reveal{% if forloop.first %} enq-main{% endif %}" href="{{ a.get_absolute_url }}">
+        {% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<div class="veil"></div>
+        <div class="enq-body">
           <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
-          <h3>{{ a.titre|truncatewords:12 }}</h3>
-          <span class="spot-meta">Publié {{ a.date_publication|publie_depuis }}</span>
-        </a>
-        {% endif %}{% endfor %}
-      </div>
+          <h3>{{ a.titre|truncatewords:14 }}</h3>
+          <span class="enq-meta">Publié {{ a.date_publication|publie_depuis }}</span>
+        </div>
+      </a>
+      {% endfor %}
     </div>
   </div>
 </section>

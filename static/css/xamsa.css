@@ -947,7 +947,7 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .hl-media{aspect-ratio:16/9;overflow:hidden;background:#0d1f17}
 .hl-media img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 25%;animation:hlZoom 20s ease-in-out infinite alternate;will-change:transform}
 @keyframes hlIn{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
-@keyframes hlZoom{from{transform:scale(1.02)}to{transform:scale(1.09)}}
+@keyframes hlZoom{from{transform:scale(1)}to{transform:scale(1.035)}}
 @media (prefers-reduced-motion:reduce){.hl-card{animation:none}.hl-media img{animation:none}}
 .hl-body{padding:1.6rem 1.9rem 1.9rem}
 .hl-tag{display:inline-block;font-family:var(--sans);font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--clay,#b5651d);padding:.32rem .8rem;border-radius:999px;margin-bottom:.7rem}
@@ -1018,3 +1018,14 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .spot-meta{font-family:var(--sans);font-size:.76rem;font-weight:600;color:var(--ochre-soft,#e7c9a3)}
 .spot-main .spot-meta{color:var(--ochre-soft,#e7c9a3)}
 @media(max-width:560px){.spot-side{grid-template-columns:1fr}}
+
+/* ---- Enquêtes : grille uniforme d'images (sans coin vide, overlay léger, texte compact) ---- */
+.enq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.2rem}
+.enq-card{position:relative;border-radius:18px;overflow:hidden;min-height:238px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--pine,#1f5c45),var(--pine-deep,#0d1f17));transition:transform .25s ease,box-shadow .25s ease}
+.enq-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(0,0,0,.2)}
+.enq-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.enq-card .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,31,56,0) 40%,rgba(13,31,56,.5) 72%,rgba(13,31,56,.9))}
+.enq-card .enq-body{position:relative;z-index:1;padding:1rem 1.1rem}
+.enq-card h3{font-size:1.02rem;line-height:1.22;margin:.5rem 0 .22rem;color:#fff;max-width:100%}
+.enq-meta{font-family:var(--sans);font-size:.75rem;font-weight:600;color:var(--ochre-soft,#e7c9a3)}
+@media(max-width:560px){.enq-grid{grid-template-columns:1fr 1fr;gap:.8rem}.enq-card{min-height:170px}.enq-card h3{font-size:.9rem}}

@@ -40,31 +40,78 @@ def _hero_publications(limite=4):
     return choisies
 
 
+def _vraie_image(url):
+    """Vrai si l'URL est une vraie photo distante (pas une illustration /static .svg)."""
+    return bool(url) and (url.startswith('http') or url.startswith('//')) \
+        and not url.lower().endswith('.svg')
+
+
 def _mur_items(limite=16):
-    """Éléments du « mur de la presse » : publications de Xamsa Média + revue de
-    presse externe, DIVERSIFIÉE (2 items max par source) pour qu'aucun site ne
-    domine. Uniquement les sources de la liste blanche (déjà en base)."""
-    xamsa = [{'titre': a.titre, 'url': a.get_absolute_url(), 'image': a.visuel or '',
+    """Éléments du « mur de la presse ». D'ABORD les publications de Xamsa Média
+    (avec image), PUIS la revue de presse externe — uniquement les items qui ont
+    une VRAIE image (les items sans photo gâchent le rendu), diversifiée (2 par
+    source)."""
+    xamsa = [{'titre': a.titre, 'url': a.get_absolute_url(), 'image': a.visuel,
               'source': 'Xamsa Média', 'date': a.date_publication, 'externe': False}
-             for a in Article.objects.filter(publie=True).order_by('-date_publication')[:4]]
+             for a in Article.objects.filter(publie=True).order_by('-date_publication')[:10]
+             if a.visuel]
+    xamsa = xamsa[:6]
 
     externes, par_source = [], {}
-    for it in RevueItem.objects.select_related('source').order_by('-date')[:150]:
+    for it in RevueItem.objects.select_related('source').order_by('-date')[:250]:
+        if not _vraie_image(it.image_url):       # on écarte les items sans vraie photo
+            continue
         nom = it.source.nom
         if par_source.get(nom, 0) >= 2:          # 2 items max par source
             continue
         par_source[nom] = par_source.get(nom, 0) + 1
-        externes.append({'titre': it.titre_propre, 'url': it.url, 'image': it.image_url or '',
+        externes.append({'titre': it.titre_propre, 'url': it.url, 'image': it.image_url,
                          'source': nom, 'date': it.date, 'externe': True})
 
-    items = xamsa + externes[:max(0, limite - len(xamsa))]
-    items.sort(key=lambda d: d['date'], reverse=True)
-    return items
+    # Xamsa en premier (par date), puis les externes (par date).
+    xamsa.sort(key=lambda d: d['date'], reverse=True)
+    externes.sort(key=lambda d: d['date'], reverse=True)
+    return (xamsa + externes)[:limite]
+
+
+_brief_essai_ts = 0.0
+
+
+def _rafraichir_brief_si_perime():
+    """Régénère le brief en tâche de fond s'il n'est pas d'aujourd'hui (non bloquant,
+    au plus une tentative toutes les 10 min). Filet de sécurité si le planificateur
+    est en veille (Render gratuit)."""
+    import time
+    import threading
+    from django.utils import timezone
+    from veille.models import Brief
+    global _brief_essai_ts
+    dernier = Brief.objects.first()
+    if dernier and dernier.date == timezone.localdate():
+        return
+    now = time.time()
+    if now - _brief_essai_ts < 600:
+        return
+    _brief_essai_ts = now
+
+    def _run():
+        from django.db import connections
+        try:
+            from assistant.brief import generer_brief_du_jour
+            generer_brief_du_jour()
+        except Exception:
+            pass
+        finally:
+            for conn in connections.all():
+                conn.close()
+    threading.Thread(target=_run, daemon=True).start()
 
 
 def home(request):
     from veille.models import Brief
     from django.templatetags.static import static
+
+    _rafraichir_brief_si_perime()
 
     # Image de la DERNIÈRE publication de chaque section (sinon image par défaut).
     der_actu = Article.objects.filter(publie=True).order_by('-date_publication').first()
@@ -82,7 +129,7 @@ def home(request):
 
     return render(request, 'home.html', {
         'hero_pubs': _hero_publications(),
-        'enquetes': Article.objects.filter(publie=True, type='enquete').order_by('-date_publication')[:5],
+        'enquetes': Article.objects.filter(publie=True, type='enquete').order_by('-date_publication')[:6],
         'mur': _mur_items(),
         'brief': Brief.objects.first(),
         'sec_actu_img': sec_actu_img, 'sec_aca_img': sec_aca_img, 'sec_com_img': sec_com_img,

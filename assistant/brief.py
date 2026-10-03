@@ -48,8 +48,26 @@ def generer_brief_du_jour(force=False):
     try:
         texte = texte_libre(PROMPT_BRIEF, "Titres de la revue de presse du jour :\n" + titres)
     except LLMIndisponible as exc:
-        logger.info("Brief non genere (LLM indisponible) : %s", exc)
-        return existant
+        # Repli SANS IA : on compose un brief à partir des titres du jour, pour que
+        # le brief reste à jour chaque jour même si le LLM est indisponible.
+        logger.info("Brief IA indisponible, repli sur les titres : %s", exc)
+        texte = _brief_repli(items)
 
     brief, _ = Brief.objects.update_or_create(date=aujourdhui, defaults={'contenu': texte})
     return brief
+
+
+def _brief_repli(items):
+    """Brief minimal sans IA : les principaux titres du jour (dédupliqués)."""
+    lignes = ["Voici les principaux titres de l'actualité sénégalaise du jour."]
+    vus = set()
+    for it in items:
+        titre = it.titre_propre.strip()
+        cle = titre.lower()
+        if not titre or cle in vus:
+            continue
+        vus.add(cle)
+        lignes.append("- {} ({})".format(titre, it.source.nom))
+        if len(lignes) >= 8:
+            break
+    return "\n".join(lignes)
