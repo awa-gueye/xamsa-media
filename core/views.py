@@ -129,7 +129,7 @@ def home(request):
 
     return render(request, 'home.html', {
         'hero_pubs': _hero_publications(),
-        'enquetes': Article.objects.filter(publie=True, type='enquete').order_by('-date_publication')[:6],
+        'enquetes': Article.objects.filter(publie=True, type='enquete').order_by('-date_publication')[:3],
         'mur': _mur_items(),
         'brief': Brief.objects.first(),
         'sec_actu_img': sec_actu_img, 'sec_aca_img': sec_aca_img, 'sec_com_img': sec_com_img,

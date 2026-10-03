@@ -54,19 +54,20 @@
 </section>
 
 {% if enquetes %}
-<section class="block">
+<section class="block enq-section">
   <div class="wrap">
     <div class="sec-head reveal">
       <div><span class="eyebrow">Le fil d'enquêtes</span><h2>Les enquêtes de Xamsa</h2></div>
       <a class="more" href="{% url 'dossiers' %}">Toutes les enquêtes <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
-    <div class="enq-grid">
+    <div class="enq-feature">
       {% for a in enquetes %}
-      <a class="enq-card reveal{% if forloop.first %} enq-main{% endif %}" href="{{ a.get_absolute_url }}">
-        {% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}<div class="veil"></div>
+      <a class="enq-card reveal{% if forloop.first %} enq-big{% endif %}" href="{{ a.get_absolute_url }}">
+        <div class="enq-img">{% if a.visuel %}<img src="{{ a.visuel }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}</div>
+        <div class="veil"></div>
         <div class="enq-body">
           <span class="badge ochre">{{ a.categorie|default:a.get_type_display }}</span>
-          <h3>{{ a.titre|truncatewords:14 }}</h3>
+          <h3>{{ a.titre|truncatewords:16 }}</h3>
           <span class="enq-meta">Publié {{ a.date_publication|publie_depuis }}</span>
         </div>
       </a>
@@ -77,7 +78,7 @@
 {% endif %}
 
 {% if brief %}
-<section class="block" style="padding-bottom:0"><div class="wrap">
+<section class="block" style="padding:2.4rem 0 0"><div class="wrap">
   <div class="brief-card reveal">
     <div class="brief-head">
       <span class="brief-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v6l2-2h7a9 9 0 0 0 0-13Z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg></span>

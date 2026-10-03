@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-title" content="Xamsa Média">
   <link rel="apple-touch-icon" href="{% static 'img/logo.png' %}">
   <link rel="manifest" href="{% static 'manifest.json' %}">
-  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=53">
+  <link rel="stylesheet" href="{% static 'css/xamsa.css' %}?v=54">
 </head>
 <body>
   <header>
@@ -123,14 +123,14 @@
         </div>
       </div>
       <div class="foot-bot">
-        <span>&copy; 2026 Xamsa Média. Tous droits réservés.</span>
-        <span>Savoir &middot; Questionner &middot; Éclairer</span>
+        <span>&copy; {% now "Y" %} Xamsa Média. Tous droits réservés.</span>
+        <span>Fièrement indépendant, édité à Dakar.</span>
       </div>
     </div>
   </footer>
 
   {% include 'partials/chatbot.html' %}
-  <script src="{% static 'js/xamsa.js' %}?v=53"></script>
+  <script src="{% static 'js/xamsa.js' %}?v=54"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
