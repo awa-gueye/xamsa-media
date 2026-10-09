@@ -50,7 +50,14 @@ def _mur_items(limite=16):
     """Éléments du « mur de la presse ». D'ABORD les publications de Xamsa Média
     (avec image), PUIS la revue de presse externe — uniquement les items qui ont
     une VRAIE image (les items sans photo gâchent le rendu), diversifiée (2 par
-    source)."""
+    source). Résultat mis en cache 60 s (clé de la montée en charge : un pic de
+    visiteurs ne frappe la base qu'une fois par minute, pas une fois par requête)."""
+    from django.core.cache import cache
+    cle = 'mur_items_v2_%d' % limite
+    en_cache = cache.get(cle)
+    if en_cache is not None:
+        return en_cache
+
     xamsa = [{'titre': a.titre, 'url': a.get_absolute_url(), 'image': a.visuel,
               'source': 'Xamsa Média', 'date': a.date_publication, 'externe': False}
              for a in Article.objects.filter(publie=True).order_by('-date_publication')[:10]
@@ -71,7 +78,9 @@ def _mur_items(limite=16):
     # Xamsa en premier (par date), puis les externes (par date).
     xamsa.sort(key=lambda d: d['date'], reverse=True)
     externes.sort(key=lambda d: d['date'], reverse=True)
-    return (xamsa + externes)[:limite]
+    resultat = (xamsa + externes)[:limite]
+    cache.set(cle, resultat, 60)
+    return resultat
 
 
 _brief_essai_ts = 0.0
@@ -107,13 +116,16 @@ def _rafraichir_brief_si_perime():
     threading.Thread(target=_run, daemon=True).start()
 
 
-def home(request):
-    from veille.models import Brief
+def _accueil_bundle():
+    """Toutes les données de l'accueil, mises en cache 60 s. Sous un pic de trafic,
+    la page d'accueil ne déclenche les requêtes lourdes qu'une fois par minute."""
+    from django.core.cache import cache
     from django.templatetags.static import static
+    from veille.models import Brief
+    data = cache.get('accueil_bundle_v2')
+    if data is not None:
+        return data
 
-    _rafraichir_brief_si_perime()
-
-    # Image de la DERNIÈRE publication de chaque section (sinon image par défaut).
     der_actu = Article.objects.filter(publie=True).order_by('-date_publication').first()
     der_aca = Ressource.objects.filter(publie=True).order_by('-date').first()
     der_com = Contribution.objects.filter(statut='publie').order_by('-date').first()
@@ -127,13 +139,21 @@ def home(request):
             sec_aca_img = der_aca.image_url
     sec_com_img = der_com.image.url if der_com and der_com.image else static('img/sections/communaute.jpg')
 
-    return render(request, 'home.html', {
+    data = {
         'hero_pubs': _hero_publications(),
-        'enquetes': Article.objects.filter(publie=True, type='enquete').order_by('-date_publication')[:3],
+        'enquetes': list(Article.objects.filter(publie=True, type='enquete')
+                         .order_by('-date_publication')[:3]),
         'mur': _mur_items(),
         'brief': Brief.objects.first(),
         'sec_actu_img': sec_actu_img, 'sec_aca_img': sec_aca_img, 'sec_com_img': sec_com_img,
-    })
+    }
+    cache.set('accueil_bundle_v2', data, 60)
+    return data
+
+
+def home(request):
+    _rafraichir_brief_si_perime()
+    return render(request, 'home.html', _accueil_bundle())
 
 
 # ---------- RUBRIQUES ----------
@@ -334,4 +354,7 @@ def latest_json(request):
             'time': d['date'].strftime('%H:%M'), 'datetime': d['date'].strftime('%d/%m %H:%M'),
             'image': d['image'], 'externe': d['externe'],
         })
-    return JsonResponse({'items': items})
+    resp = JsonResponse({'items': items})
+    # Mise en cache courte (navigateur + CDN) : allège le serveur face aux sondages.
+    resp['Cache-Control'] = 'public, max-age=45'
+    return resp
