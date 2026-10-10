@@ -88,7 +88,7 @@ _GLOBAL_MAX = 300
 _GLOBAL_WINDOW = 60
 
 # Chemins jamais limités (fichiers statiques/medias servis par WhiteNoise, PWA).
-_EXCLUS = ('/static/', '/media/', '/sw.js', '/manifest.json', '/favicon.ico')
+_EXCLUS = ('/static/', '/media/', '/sw.js', '/manifest.json', '/favicon.ico', '/ping', '/robots.txt')
 
 
 def _depasse(scope, ip, limite, fenetre):

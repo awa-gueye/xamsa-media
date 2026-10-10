@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('sw.js', views.service_worker, name='service_worker'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
+    path('ping', views.ping, name='ping'),
     path('hors-ligne/', views.hors_ligne, name='hors_ligne'),
     path('recherche/', views.recherche, name='recherche'),
     path('newsletter/', views.newsletter, name='newsletter'),

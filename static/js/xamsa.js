@@ -227,6 +227,36 @@
         else { var t = document.createElement('textarea'); t.value = url; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); done(); }
       });
     });
+
+    // ---- Sélecteur d'emojis pour les commentaires ----
+    var EMOJIS = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','🙂','😉','😍','🥰','😘','😋','😎','🤩','🥳','🤗','🤔','🙌','👏','👍','👎','👌','🙏','💪','🔥','✨','🎉','❤️','🧡','💛','💚','💙','💜','💯','😮','😢','😭','😡','🤯','😱','🙄','😴','🤝','👀','🇸🇳'];
+    var panel = null, cible = null;
+    function fermerEmoji() { if (panel) { panel.remove(); panel = null; } }
+    function insererEmoji(em) {
+      if (!cible) return;
+      var d = cible.selectionStart == null ? cible.value.length : cible.selectionStart;
+      var f = cible.selectionEnd == null ? cible.value.length : cible.selectionEnd;
+      cible.value = cible.value.slice(0, d) + em + cible.value.slice(f);
+      cible.focus(); cible.selectionStart = cible.selectionEnd = d + em.length;
+    }
+    document.querySelectorAll('.emoji-trigger').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var champ = btn.closest('.comm-field');
+        cible = champ ? champ.querySelector('textarea') : null;
+        if (panel) { fermerEmoji(); return; }
+        panel = document.createElement('div'); panel.className = 'emoji-panel';
+        EMOJIS.forEach(function (em) {
+          var s = document.createElement('button'); s.type = 'button'; s.className = 'emoji-item'; s.textContent = em;
+          s.addEventListener('click', function (ev) { ev.stopPropagation(); insererEmoji(em); });
+          panel.appendChild(s);
+        });
+        btn.parentNode.appendChild(panel);
+      });
+    });
+    document.addEventListener('click', function (e) {
+      if (panel && !panel.contains(e.target) && !e.target.classList.contains('emoji-trigger')) fermerEmoji();
+    });
   })();
 
   // ---- Chatbot "Looy laaj ?" ----

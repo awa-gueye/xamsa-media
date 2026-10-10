@@ -1045,3 +1045,15 @@ a.lecture-author:hover .la-name{color:var(--pine)}
 .enq-big h3{font-size:1.6rem;max-width:18ch}
 .enq-card .enq-meta{font-family:var(--sans);font-size:.76rem;font-weight:600;color:var(--ochre-soft,#e7c9a3)}
 @media(max-width:760px){.enq-feature{grid-template-columns:1fr;grid-template-rows:none}.enq-feature .enq-big{grid-row:auto;min-height:230px}.enq-big h3{font-size:1.2rem}}
+
+/* ---- Images des rubriques (Actualité) à la place des icônes ---- */
+.rub-media{aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--pine-deep)}
+.rub-media img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---- Commentaires : sélecteur d'emojis (style messagerie) ---- */
+.comm-actions{position:relative;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.emoji-trigger{background:transparent;border:1px solid var(--line);border-radius:999px;width:38px;height:38px;font-size:1.15rem;cursor:pointer;line-height:1;display:grid;place-items:center;padding:0;transition:.15s}
+.emoji-trigger:hover{background:var(--cream)}
+.emoji-panel{position:absolute;bottom:calc(100% + 8px);left:0;z-index:40;width:294px;max-width:84vw;max-height:214px;overflow-y:auto;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:.5rem;display:grid;grid-template-columns:repeat(8,1fr);gap:.1rem}
+.emoji-item{background:transparent;border:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem;border-radius:8px}
+.emoji-item:hover{background:var(--cream)}

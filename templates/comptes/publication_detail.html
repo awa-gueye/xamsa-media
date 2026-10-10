@@ -92,7 +92,7 @@
     <span class="comm-av">{% if user.profil.photo %}<img src="{{ user.profil.photo.url }}" alt="">{% else %}{{ user.first_name.0|default:user.username.0|upper }}{% endif %}</span>
     <div class="comm-field">
       <textarea name="texte" rows="3" maxlength="3000" placeholder="Ajouter un commentaire..." required></textarea>
-      <div class="comm-actions"><button class="btn btn-green btnsm" type="submit">Publier</button></div>
+      <div class="comm-actions"><button class="emoji-trigger" type="button" aria-label="Insérer un emoji" title="Emoji">😊</button><button class="btn btn-green btnsm" type="submit">Publier</button></div>
     </div>
   </form>
   {% else %}
@@ -135,7 +135,7 @@
       <form class="comm-form reply-form" id="reply-{{ c.pk }}" method="post" action="{% url 'commenter' pub.pk %}" hidden>
         {% csrf_token %}<input type="hidden" name="parent" value="{{ c.pk }}">
         <div class="comm-field"><textarea name="texte" rows="2" maxlength="3000" placeholder="Votre réponse..." required></textarea>
-          <div class="comm-actions"><button class="btn btn-green btnsm" type="submit">Répondre</button></div></div>
+          <div class="comm-actions"><button class="emoji-trigger" type="button" aria-label="Insérer un emoji">😊</button><button class="btn btn-green btnsm" type="submit">Répondre</button></div></div>
       </form>
       {% endif %}
     </li>

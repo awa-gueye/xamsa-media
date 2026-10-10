@@ -313,6 +313,15 @@ def newsletter(request):
     return redirect(suivant)
 
 
+def ping(request):
+    """Point de santé ultra-léger (aucune requête DB) pour garder le service
+    éveillé via un pinger externe (UptimeRobot / Cloudflare Worker Cron)."""
+    from django.http import HttpResponse
+    resp = HttpResponse('ok', content_type='text/plain')
+    resp['Cache-Control'] = 'no-store'
+    return resp
+
+
 def robots_txt(request):
     """robots.txt : écarte les robots des zones sensibles et limite le rythme."""
     from django.http import HttpResponse

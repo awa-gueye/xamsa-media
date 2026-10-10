@@ -16,6 +16,15 @@
   {% if article.video_embed %}<div class="video-embed"><iframe src="{{ article.video_embed }}" title="{{ article.titre }}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>{% endif %}
   <div class="corps">{{ article.corps|linebreaks }}</div>
   <div class="reactions">
+    <button class="jaime-btn{% if a_aime %} on{% endif %}" type="button" id="jaimeBtn"
+      data-url="{% url 'article_jaime' article.slug %}"{% if not user.is_authenticated %} data-login="{% url 'connexion' %}?next={{ request.path }}"{% endif %}>
+      <svg class="icon" viewBox="0 0 24 24"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Zm0 0 4.5-7.5a1.5 1.5 0 0 1 2.8.9L13 9h5.5a2 2 0 0 1 2 2.4l-1.4 7A2 2 0 0 1 17 20H7"/></svg>
+      <span class="jaime-lbl">J'aime</span><span class="jaime-count" id="jaimeCount">{{ nb_jaime }}</span>
+    </button>
+    <a class="reactions-comm" href="#commentaires">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H6l-3 3V12a8 8 0 0 1 16 0Z"/></svg>
+      <span>{{ nb_commentaires }} commentaire{{ nb_commentaires|pluralize }}</span>
+    </a>
     <div class="share">
       <span class="share-lbl">Partager</span>
       <a class="share-btn" target="_blank" rel="noopener" aria-label="Partager sur WhatsApp"
@@ -40,4 +49,69 @@
     <a class="link" href="{% if article.categorie %}{% url 'rubrique_detail' article.categorie.slug %}{% else %}{% url 'home' %}{% endif %}">Plus dans cette rubrique <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </article>
+
+<section class="block comments" id="commentaires"><div class="wrap" style="max-width:760px">
+  <h2 class="comm-title">{{ nb_commentaires }} commentaire{{ nb_commentaires|pluralize }}</h2>
+
+  {% if user.is_authenticated %}
+  <form class="comm-form" method="post" action="{% url 'article_commenter' article.slug %}">
+    {% csrf_token %}
+    <span class="comm-av">{% if user.profil.photo %}<img src="{{ user.profil.photo.url }}" alt="">{% else %}{{ user.first_name.0|default:user.username.0|upper }}{% endif %}</span>
+    <div class="comm-field">
+      <textarea name="texte" rows="3" maxlength="3000" placeholder="Ajouter un commentaire..." required></textarea>
+      <div class="comm-actions">
+        <button class="emoji-trigger" type="button" aria-label="Insérer un emoji" title="Emoji">😊</button>
+        <button class="btn btn-green btnsm" type="submit">Publier</button>
+      </div>
+    </div>
+  </form>
+  {% else %}
+  <p class="comm-login"><a href="{% url 'connexion' %}?next={{ request.path }}">Connectez-vous</a> pour laisser un commentaire ou réagir.</p>
+  {% endif %}
+
+  <ul class="comm-list">
+    {% for c in commentaires %}
+    <li class="comm">
+      <div class="comm-head">
+        <a class="comm-av" href="{% url 'profil_public' c.auteur.pk %}">{% if c.auteur.profil.photo %}<img src="{{ c.auteur.profil.photo.url }}" alt="">{% else %}{{ c.auteur.first_name.0|default:c.auteur.username.0|upper }}{% endif %}</a>
+        <div class="comm-meta"><a class="comm-name" href="{% url 'profil_public' c.auteur.pk %}">{{ c.auteur.get_full_name|default:c.auteur.username }}</a><span class="comm-date">{{ c.date|date:"d M Y, H:i" }}</span></div>
+        {% if user == c.auteur or user.is_superuser %}
+        <form method="post" action="{% url 'article_supprimer_commentaire' c.pk %}" onsubmit="return confirm('Supprimer ce commentaire ?');">{% csrf_token %}<button class="comm-del" type="submit" title="Supprimer"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button></form>
+        {% endif %}
+      </div>
+      <p class="comm-text">{{ c.texte|linebreaksbr }}</p>
+      {% if user.is_authenticated %}<button class="comm-reply-btn" data-target="areply-{{ c.pk }}">Répondre</button>{% endif %}
+
+      {% with reponses=c.reponses_visibles %}
+      {% if reponses %}
+      <ul class="comm-replies">
+        {% for r in reponses %}
+        <li class="comm reply">
+          <div class="comm-head">
+            <a class="comm-av" href="{% url 'profil_public' r.auteur.pk %}">{% if r.auteur.profil.photo %}<img src="{{ r.auteur.profil.photo.url }}" alt="">{% else %}{{ r.auteur.first_name.0|default:r.auteur.username.0|upper }}{% endif %}</a>
+            <div class="comm-meta"><a class="comm-name" href="{% url 'profil_public' r.auteur.pk %}">{{ r.auteur.get_full_name|default:r.auteur.username }}</a><span class="comm-date">{{ r.date|date:"d M Y, H:i" }}</span></div>
+            {% if user == r.auteur or user.is_superuser %}
+            <form method="post" action="{% url 'article_supprimer_commentaire' r.pk %}" onsubmit="return confirm('Supprimer ce commentaire ?');">{% csrf_token %}<button class="comm-del" type="submit" title="Supprimer"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button></form>
+            {% endif %}
+          </div>
+          <p class="comm-text">{{ r.texte|linebreaksbr }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+
+      {% if user.is_authenticated %}
+      <form class="comm-form reply-form" id="areply-{{ c.pk }}" method="post" action="{% url 'article_commenter' article.slug %}" hidden>
+        {% csrf_token %}<input type="hidden" name="parent" value="{{ c.pk }}">
+        <div class="comm-field"><textarea name="texte" rows="2" maxlength="3000" placeholder="Votre réponse..." required></textarea>
+          <div class="comm-actions"><button class="emoji-trigger" type="button" aria-label="Insérer un emoji">😊</button><button class="btn btn-green btnsm" type="submit">Répondre</button></div></div>
+      </form>
+      {% endif %}
+    </li>
+    {% empty %}
+    <li class="comm-empty">Soyez le premier à commenter cet article.</li>
+    {% endfor %}
+  </ul>
+</div></section>
 {% endblock %}
